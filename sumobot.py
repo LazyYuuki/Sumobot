@@ -513,7 +513,7 @@ class Sumobot():
 
         self.run_frame()
 
-        state = [self.sumobot.xcor(), self.sumobot.ycor(), self.sumobot.dx, self.sumobot.dy] # 4
+        state = [self.sumobot.xcor(), self.sumobot.ycor(), self.sumobot.dx, self.sumobot.dy, self.enemy.xcor(), self.enemy.ycor()] # 6
         return self.reward, state, self.done
     
     
