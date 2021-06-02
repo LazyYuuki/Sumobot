@@ -26,10 +26,9 @@ while True:
     readedText = ser.readline()
     decode = readedText.decode('UTF-8')
     decode = decode.replace("\r\n", "")
-    
     temp_list = decode.split(',')
     if (len(temp_list) == 4):
-        decode_list = [0 if (i == '') else int(i) for i in temp_list]
+        decode_list = [int(i) for i in temp_list]
     else:
         decode_list = [0, 0, 0, 0]
 
