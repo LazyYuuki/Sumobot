@@ -3,7 +3,7 @@ import numpy as np
 from keras.models import load_model
  
 # load model
-model = load_model('mymodel.h5')
+model = load_model('mymodel2.h5')
 # summarize model.
 # model.summary()
 # load dataset
