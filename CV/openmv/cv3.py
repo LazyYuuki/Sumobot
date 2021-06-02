@@ -57,7 +57,7 @@ while(True):
         r_min = 40, r_max = 42, r_step = 2):
         if c.r() > radius:
             arena_x, arena_y, radius = c.x(), c.y(), c.r()
-            img.draw_circle(arena_x, arena_y, radius, color = (255, 0, 0))
+            # img.draw_circle(arena_x, arena_y, radius, color = (255, 0, 0))
 
     if enable_lens_corr: img.lens_corr(1.8)
 
@@ -77,13 +77,12 @@ while(True):
             #if math.sqrt(math.pow(x1-arena_x, 2) + math.pow(y1-arena_y, 2)) < radius-3:
                 #edge_x1, edge_y1, edge_x2, edge_y2 = x1, y1, x2, y2
                 #img.draw_line(l.line(), color = (255, 0, 0))
-    for r in img.find_rects(threshold = 10000):
+    for r in img.find_rects(threshold = 15000):
         enemy_x, enemy_y, e_width, e_height = r.rect()
-        if math.sqrt(math.pow(enemy_x-center_x, 2) + math.pow(enemy_y-center_y, 2)) > 17:
-            if math.sqrt(math.pow(enemy_y-arena_x, 2) + math.pow(enemy_y-arena_y, 2)) < radius-3:
-                img.draw_rectangle(r.rect(), color = (255, 0, 0))
-                enemy_cx = enemy_x + e_width/2
-                enemy_cy = enemy_y + e_height/2
+        if math.sqrt(math.pow(enemy_x-center_x, 2) + math.pow(enemy_y-center_y, 2)) > 22:
+            img.draw_rectangle(r.rect(), color = (255, 0, 0))
+            enemy_cx = enemy_x + e_width/2
+            enemy_cy = enemy_y + e_height/2
     center_x -= arena_x
     center_y -= arena_y
     enemy_cx -= arena_x

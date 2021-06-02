@@ -37,8 +37,8 @@ while True:
     print(decode_list)
     move = np.argmax(pred[0])
     print(movement[move])
-    payload_dict = {"cw": True, "move": False}
-    payload_json = json.dumps(move)
+    payload_dict = {"cw": True, "move": str(move)}
+    payload_json = json.dumps(payload_dict)
     client.publish('raspberry/new', payload=payload_json, qos = 0, retain=False)
 
     
