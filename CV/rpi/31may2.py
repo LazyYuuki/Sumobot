@@ -21,11 +21,11 @@ def find_quadrant(ours_x,ours_y,arena_x,arena_y):#this one is for later use
     if ours_x - arena_x >= 0 and ours_y - arena_y >= 0:
         return 1
     elif ours_x - arena_x >= 0 and ours_y - arena_y < 0:
-        return 2
+        return 4
     elif ours_x - arena_x < 0 and ours_y - arena_y < 0:
         return 3
     else:
-        return 4
+        return 2
     
 
 client = mqtt.Client()
