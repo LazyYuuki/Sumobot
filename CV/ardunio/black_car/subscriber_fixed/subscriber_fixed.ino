@@ -7,9 +7,9 @@
 
 const char* ssid = "RoboWifi";
 const char* password = "73333449";
-const char *serverHostname = "192.168.1.17";
+const char *serverHostname = "192.168.1.22";
 // const IPAddress serverIPAddress(192, 168, 1, 3);
-const char *topic = "raspberry/new";
+const char *topic = "rl/movement";
 const char* mqtt_username = "sumobot";
 const char* mqtt_password = "sumobot";
 WiFiClient espClient;
