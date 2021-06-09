@@ -49,14 +49,13 @@ client.setServer(serverHostname, 1883);
 client.setCallback(callback);
 
 while (!client.connected()) {
-    Serial.println("Connected to MQTT Broker!");
-    
+  Serial.println("Connecting to MQTT Broker!"); 
   if(client.connect("ESP", mqtt_username, mqtt_password)){
-    Serial.println("connectd");
+    Serial.println("Connected");
   }
 
   else{
-    Serial.println("failed");
+    Serial.println("Failed to connect");
     Serial.println(client.state());
     delay(200);
   }
