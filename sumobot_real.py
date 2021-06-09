@@ -1,10 +1,29 @@
-import turtle as t
 from math import sqrt
 import random
 import numpy as np
 from math import tan
+from paho.mqtt import client as mqtt_client
 
+broker = ''
+port = 1883
+topic = "" # fill in the topci
+client_id = f'python-mqtt-{random.randint(0, 1000)}'
+# username = ''
+# password = ''
 
+#mqtt will allow us to send the movement data to the robot
+def connect_mqtt():
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            print("Connected to MQTT Broker!")
+        else:
+            print("Failed to connect, return code %d\n", rc)
+    # Set Connecting Client ID
+    client = mqtt_client.Client(client_id)
+    client.username_pw_set(username, password)
+    client.on_connect = on_connect
+    client.connect(broker, port)
+    return client
 
 class Sumobot():
 
@@ -15,59 +34,17 @@ class Sumobot():
         self.enemy_reward = 0
         self.hit, self.miss = 0, 0
         
-        t.clearscreen()
-        t.pu()
-        t.setpos(-400,0)
-        t.right(90)
-        t.pd()
-        t.circle(400)
-
-        t.pu()
-        t.goto(0,0)
-        t.pd()
-        t.dot('red')
-
-        # Setup Background
-
-        self.win = t.Screen()
-        self.win.title('Sumobot')
-        self.win.setup(width=1000, height=1000)
-        self.win.tracer(0)
-
-        # Sumobot
-
-        self.sumobot = t.Turtle()
-        self.sumobot.speed(0)
-        self.sumobot.shape('square')
-        self.sumobot.shapesize(stretch_wid=2, stretch_len=2)
-        self.sumobot.color('blue')
-        self.sumobot.penup()
-#         self.sumobot.mode("standard")
-        self.sumobot.goto(0, -380)
-        self.sumobot.dx = random.randint(0,4)
-        self.sumobot.dy = random.randint(0,4)
-
-        # Enemy
-
-        self.enemy = t.Turtle()
-        self.enemy.speed(0)
-        self.enemy.shape('square')
-        self.enemy.color('red')
-        self.enemy.penup()
-        self.enemy.shapesize(stretch_wid=4, stretch_len=4)
-#         self.enemy.goto(random.randint(0,330), random.randint(0,330))
-        self.enemy.goto(0, 200)
-        self.enemy.dx = 0
-        self.enemy.dy = -1
+        #store defaults from the openmv such as arena and origin, fps
+        #depending on the fps from openmv set the delay in arduino, and after each movement
+        #execution, the command variable in arduino should reset to stop
 
         # Score
-
         self.score = t.Turtle()
         self.score.speed(0)
         self.score.color('black')
         self.score.penup()
         self.score.hideturtle()
-        self.score.goto(0, 250)
+        self.score.goto(0, 100)
         self.score.write("Hit: {}   Missed: {}".format(self.hit, self.miss), align='center', font=('Courier', 24, 'normal'))
 
         # -------------------- Keyboard control ----------------------
@@ -78,132 +55,15 @@ class Sumobot():
 #         self.win.onkey(self.sumobot_up, 'Up')
 #         self.win.onkey(self.sumobot_down, 'Down')
 
-    # Sumobot movement
-
-    def sumobot_right(self):
-
-        self.sumobot.dx = 3
-        self.sumobot.dy = 0
-
-    def sumobot_left(self):
-
-        self.sumobot.dx = -3
-        self.sumobot.dy = 0
-            
-    def sumobot_up(self):
-        
-        self.sumobot.dx = 0
-        self.sumobot.dy = 3
-    
-    def sumobot_down(self):
-        
-        self.sumobot.dx = 0
-        self.sumobot.dy = -3
-    
-    def sumobot_stop(self):
-        
-        self.sumobot.dx = 0
-        self.sumobot.dy = 0
-        
-    def sumobot_top_right(self):
-        self.sumobot.dx = 3
-        self.sumobot.dy = 3
-        
-    def sumobot_top_left(self):
-        self.sumobot.dx = -3
-        self.sumobot.dy = 3
-        
-    def sumobot_bottom_right(self):
-        self.sumobot.dx = 3
-        self.sumobot.dy = -3
-        
-    def sumobot_bottom_left(self):
-        self.sumobot.dx = -3
-        self.sumobot.dy = -3
-        
-    # Enemy Movement
-    
-    def enemy_chase(self, sumoX, sumoY):
-        angle = self.enemy.towards(sumoX, sumoY)
-        if angle == 0:
-            self.enemy.dx = 1
-            self.enemy.dy = 0
-            return
-        if 0 < angle < 90:
-            X = np.array([[1, 1], [tan(angle), -1]])
-            Y = np.array([2, 0])
-            C = np.linalg.solve(X,Y)
-            self.enemy.dx = C[0]
-            self.enemy.dy = C[1] 
-            return
-        if angle == 90:
-            self.enemy.dx = 0
-            self.enemy.dy = 1
-            return
-        if 90 < angle < 180:
-            angle = angle - 90
-            X = np.array([[1, 1], [1, -tan(angle)]])
-            Y = np.array([2, 0])
-            C = np.linalg.solve(X,Y)
-            self.enemy.dx = -C[0]
-            self.enemy.dy = C[1]  
-            return
-        if angle == 180:
-            self.enemy.dx = -1
-            self.enemy.dy = 0
-            return
-        if 180 < angle < 270:
-            angle = angle - 180
-            X = np.array([[1, 1], [tan(angle), -1]])
-            Y = np.array([2, 0])
-            C = np.linalg.solve(X,Y)
-            self.enemy.dx = -C[0]
-            self.enemy.dy = -C[1]
-            return
-        if angle == 270:
-            self.enemy.dx = 0
-            self.enemy.dy = -1
-            return
-        if 270 < angle < 360:
-            angle = angle - 270
-            X = np.array([[1, 1], [1, -tan(angle)]])
-            Y = np.array([2, 0])
-            C = np.linalg.solve(X,Y)
-            self.enemy.dx = C[0]
-            self.enemy.dy = -C[1]  
-            return
-            
-    def run_frame(self):
-
-        self.win.update()
-
-        # Sumobot moving
-        self.sumobot.setx(self.sumobot.xcor() + self.sumobot.dx)
-        self.sumobot.sety(self.sumobot.ycor() + self.sumobot.dy)
-        self.enemy_chase(self.sumobot.xcor(), self.sumobot.ycor())
-        # Enemy moving
-        self.enemy.setx(self.enemy.xcor() + self.enemy.dx)
-        self.enemy.sety(self.enemy.ycor() + self.enemy.dy)
-
-        
-        # Enemy and Arena collision
-
-        if sqrt(pow(self.enemy.xcor(), 2) + pow(self.enemy.ycor(), 2)) > 340:
-            self.enemy.goto(0, 200)
-            self.sumobot.goto(0, -380)
-            self.miss += 1
-            self.score.clear()
-            self.score.write("Hit: {}   Missed: {}".format(self.hit, self.miss), align='center', font=('Courier', 24, 'normal'))
-#             self.enemy_reward -= 1000
-            self.done = True
-#         else:
-#             self.enemy_reward += 400 # always rewarded for being in the arena
+    #for each frame of data that comes in, run this function?
+    #when we chagne resolution, the pixel count changes, so stick to a standard one.        
+    def run_frame(self):        
 
         # Sumobot Arena contact
 
-        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 382:
-            self.sumobot.goto(0, -380)
-            self.enemy.goto(0, 200)
+        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
+            self.sumobot.goto(0, -32)
+            self.reset()
             self.miss += 1
             self.score.clear()
             self.score.write("Hit: {}   Missed: {}".format(self.hit, self.miss), align='center', font=('Courier', 24, 'normal'))
@@ -212,29 +72,7 @@ class Sumobot():
             self.done = True
         else:
             self.reward += 1000
-#             self.enemy_reward -= 400
-            
-        # stay as far as possible from enemy    
-        if sqrt(pow((self.enemy.xcor()-self.sumobot.xcor()), 2) + pow((self.enemy.ycor()-self.sumobot.ycor()), 2)) > 300:
-            self.reward += 150
-#             self.enemy_reward -= 800
-        elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80:
-            self.reward -= 200
-#             self.enemy_reward += 600
-        else:
-            self.reward += 100
-#             self.enemy_reward -= 500
-
-        # Enemy Sumobot collision
-
-        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 60:
-#             self.sumobot.goto(0, -380)
-            self.hit += 1
-            self.score.clear()
-            self.score.write("Hit: {}   Missed: {}".format(self.hit, self.miss), align='center', font=('Courier', 24, 'normal'))
-            self.reward -= 100
-#             self.enemy_reward += 3000
-#             self.done = True
+#             self.enemy_reward -= 400            
 
     # ------------------------ AI control ------------------------
 
@@ -250,17 +88,9 @@ class Sumobot():
 
     def reset(self):
 
-        self.sumobot.goto(0, -380)
-        self.enemy.goto(0, 200)
-#         self.sumobot.right(100)
-        return [self.sumobot.xcor(), self.sumobot.ycor(), self.sumobot.dx, self.sumobot.dy] # maybe add enemy coordinates too
+        self.sumobot.goto(0, -32)
 
-#     def reset_enemy(self):
-
-#         self.enemy.goto(0, 200)
-# #         self.enemy.goto(0, 100)
-# #         self.sumobot.right(100)
-#         return [self.enemy.xcor(), self.enemy.ycor(), self.enemy.dx, self.enemy.dy]
+        return [self.sumobot.xcor(), self.sumobot.ycor()] # maybe add enemy coordinates too
 
     def step(self, action):
 
@@ -268,18 +98,26 @@ class Sumobot():
         self.done = 0
         angle = self.sumobot.towards(self.enemy.xcor(), self.enemy.ycor())
         arena_angle = self.sumobot.towards(0, 0)
+
+        
+        # 0 do nothing
         if action == 0:
+            if sqrt(pow((self.enemy.xcor()-self.sumobot.xcor()), 2) + pow((self.enemy.ycor()-self.sumobot.ycor()), 2)) > 20:
+                self.reward += 1000
+            else:
+                self.reward -= 1000
             self.sumobot_stop()
 #             if sqrt(pow((self.enemy.xcor()-self.sumobot.xcor()), 2) + pow((self.enemy.ycor()-self.sumobot.ycor()), 2)) > 300:
 #                 self.reward += 200
 #             else:
 #                 self.reward -= 100
 
+        # 1 move left
         if action == 1:
             #close to the enemy
-            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80:
+            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10:
                 # close to the edge of the arena
-                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                     # enemy is in second or third quadrant respect to robot and robot is at the right of the arena
                     if (225 < angle < 270 and 135 < arena_angle < 225) or (90 < angle < 135 and 135 < arena_angle < 225):
                         self.reward += 2000
@@ -301,7 +139,7 @@ class Sumobot():
                     else:
                         self.reward -= 1000
             #just close to the edge
-            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                 # robot in first and fourth quadrants edges
                 if 135 < arena_angle < 225:
                     self.reward += 4000
@@ -309,14 +147,15 @@ class Sumobot():
                 elif arena_angle < 90 or arena_angle > 270:
                     self.reward -= 5000
             # rewarding unjustified movement
-            self.reward += 60
+#             self.reward += 60
             self.sumobot_left()
-                          
+
+        # 2 move right           
         if action == 2:
             #close to the enemy
-            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80:
+            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10:
                 # close to the edge of the arena
-                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                     # enemy is in second and third quadrant respect to robot and robot is at the bottom and top of the arena
                     if (90 < angle < 135 and 45 < angle < 90) or (225 < angle < 270 and 270 < arena_angle < 315):
                         self.reward += 2000
@@ -338,7 +177,7 @@ class Sumobot():
                     else:
                         self.reward -= 1000
             #just close to the edge
-            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                 # robot in left side edges
                 if arena_angle < 45 or arena_angle > 315:
                     self.reward += 4000
@@ -346,13 +185,14 @@ class Sumobot():
                 elif 135 < arena_angle < 225:
                     self.reward -= 5000
             # rewarding unjustified movement
-            self.reward += 60
+#             self.reward += 60
             self.sumobot_right()
-            
+
+        # 3 move up   
         if action == 3:
-            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80:
+            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10:
                 # close to the edge of the arena
-                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                     # enemy in fourth and third quadrant and robot in the left and right side of the arena
                     if (angle < 315 and arena_angle < 45) or (180 < angle < 225 and 135 < arena_angle < 180):
                         self.reward += 2000
@@ -371,21 +211,21 @@ class Sumobot():
                     else:
                         self.reward -= 1000
             #just close to the edge
-            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:  
+            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:  
                 #robot at the bottom of the arena
                 if (arena_angle < 45 or 135 < angle < 180):
                     self.reward += 1000
                 elif (arena_angle < 180):
                     self.reward -= 2000
             # rewarding unjustified movement
-            self.reward += 60
+#             self.reward += 60
             self.sumobot_up()
                 
-            
+         # 4 move down
         if action == 4:
-            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80:
+            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10:
                 # close to the edge of the arena
-                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                     # enemy on the left and right of the robot and robot at the top of the arena
                     if (180 < angle < 225 and 225 < arena_angle < 270) or (angle < 315 and 270 < arena_angle < 315):
                         self.reward += 2000
@@ -402,7 +242,7 @@ class Sumobot():
                     elif(angle < 180):
                         self.reward -=2000
             #just close to the edge
-            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:   
+            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:   
                 # robot at the top of the arena
                 if (225 < arena_angle < 315):
                     self.reward += 1000
@@ -410,14 +250,14 @@ class Sumobot():
                 elif (45 < arena_angle < 135):
                     self.reward -= 2000
             # rewarding unjustified movement
-            self.reward += 60
+#             self.reward += 60
             self.sumobot_down()
                 
-            
+        # 5 top right      
         if action == 5:
-            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80: 
+            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10: 
                 # close to the edge of the arena
-                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                     if (90 < angle < 135 and 90 < arena_angle < 135) or ( angle > 270 and arena_angle > 315):
                         self.reward += 2000
                     elif (angle > 315 and arena_agle < 45) or (90 < angle < 180 and 45 < arena_angle < 90):
@@ -429,20 +269,20 @@ class Sumobot():
                         self.reward += 1000
                     else: 
                         self.reward -= 2000
-            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                 if (135 < arena_angle < 315):
                     self.reward -= 5000
                 else:
                     self.reward +=2000
             else:
-                self.reward += 60
-            self.sumobot_top_right()
+#                 self.reward += 60
+                self.sumobot_top_right()
                 
-
+        # 6 top left 
         if action == 6:
-            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80: 
+            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10: 
                 # close to the edge of the arena
-                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                     if((angle < 45 or angle > 315) and 45 < arena_angle < 90) or (225 < angle < 270 and 225 < arena_angle < 270):
                         self.reward += 2000
                     elif (180 < angle < 270 and 135 < arena_angle < 180) or (angle < 90 and 90 < arena_angle < 135):
@@ -454,19 +294,20 @@ class Sumobot():
                         self.reward += 1000
                     else:
                         self.reward -= 1000
-            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                 if (45 < arena_angle < 225):
                     self.reward +=1000
                 else:
                     self.reward -= 1000
             else:
-                self.reward += 60
-            self.sumobot_top_left()
+#                 self.reward += 60
+                self.sumobot_top_left()
 
+        # 7 bottom right
         if action == 7:
-            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80: 
+            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10: 
                 # close to the edge of the arena
-                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                     if(45 < angle < 90 and arena_angle < 45) or (90 < angle < 180 and 225 < arena_angle < 270):
                         self.reward += 2000
                     elif(180 < angle < 270 and 270 < arena_angle < 315) or (angle < 90 and arena_angle > 315):
@@ -478,97 +319,45 @@ class Sumobot():
                         self.reward += 1000
                     else:
                         self.reward -= 1000
-            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                 if(45 < arena_angle < 225):
                     self.reward -= 2000
                 else:
                     self.reward += 2000
             else:
-                self.reward += 60
-            self.sumobot_bottom_right()
-
+#                 self.reward += 60
+                self.sumobot_bottom_right()
+        
+        # 8 bottom left   
         if action == 8:
-            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80: 
+            if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10: 
                 # close to the edge of the arena
-                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+                if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                     if((angle < 45 or angle > 315) and 270 < arena_angle < 315) or (90 < angle < 180 and 135 < arena_angle < 180):
                         self.reward += 2000
                     elif (angle < 270 and 225 < arena_angle < 270) or (90 < angle < 180 and 180 < arena_angle < 225):
                         self.reward += 2000
-                    elif (arena_anlge > 315 or arena_angle < 135):
+                    elif (arena_angle > 315 or arena_angle < 135):
                         self.reward -= 5000
                 else:
                     if(angle > 315 or angle < 135):
                         self.reward += 2000
                     else:
                         self.reward -= 2000
-            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
+            elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 32:
                 if(135 < arena_angle < 315):
                     self.reward += 1000
                 else:
                     self.reward -= 1000
             else:
-                self.reward += 60
-            self.sumobot_bottom_left()
+#                 self.reward += 60
+                self.sumobot_bottom_left()
 
         self.run_frame()
 
-        state = [self.sumobot.xcor(), self.sumobot.ycor(), self.sumobot.dx, self.sumobot.dy, self.enemy.xcor(), self.enemy.ycor()] # 6
+        state = [self.sumobot.xcor(), self.sumobot.ycor()] # 2
         return self.reward, state, self.done
     
-    
-#     def step_enemy(self, action):
-
-#         self.enemy_reward = 0
-#         self.done = 0
-        
-#         if action == 1:
-#             angle = self.enemy.towards(self.sumobot.xcor(). self.sumobot.ycor())
-#             X = np.array([[1, 1], [1, -tan(360 - angle)]])
-#             Y = np.array([2, 0])
-#             C = np.linalg.solve(X,Y)
-#             self.enemy.dx = C[0]
-#             self.enemy.dy = C[1]
-#         if action == 0:
-#             self.enemy_stop()
-
-#         if action == 1:
-#             self.enemy_left()
-#             self.enemy_reward += 60
-            
-#         if action == 2:
-#             self.enemy_right()
-#             self.enemy_reward += 60
-            
-#         if action == 3:
-#             self.enemy_up()
-#             self.enemy_reward += 60
-            
-#         if action == 4:
-#             self.enemy_down()
-#             self.enemy_reward += 60
-            
-#         if action == 5:
-#             self.enemy_top_right()
-#             self.enemy_reward += 30
-
-#         if action == 6:
-#             self.enemy_top_left()
-#             self.enemy_reward += 30
-
-#         if action == 7:
-#             self.enemy_bottom_right()
-#             self.enemy_reward += 30
-
-#         if action == 8:
-#             self.enemy_bottom_left()
-#             self.enemy_reward += 30
-        
-
-#         self.run_frame()
-
-#         state = [self.enemy.xcor(), self.enemy.ycor(), self.enemy.dx, self.enemy.dy] # 4
-#         return self.enemy_reward, state, self.done
 
 
 # ------------------------ Human control ------------------------
