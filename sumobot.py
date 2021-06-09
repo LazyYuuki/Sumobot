@@ -253,7 +253,7 @@ class Sumobot():
         self.sumobot.goto(0, -380)
         self.enemy.goto(0, 200)
 #         self.sumobot.right(100)
-        return [self.sumobot.xcor(), self.sumobot.ycor(), self.sumobot.dx, self.sumobot.dy] # maybe add enemy coordinates too
+        return [self.sumobot.xcor(), self.sumobot.ycor(), self.enemy.xcor(), self.enemy.ycor()] # maybe add enemy coordinates too
 
 #     def reset_enemy(self):
 
@@ -513,7 +513,7 @@ class Sumobot():
 
         self.run_frame()
 
-        state = [self.sumobot.xcor(), self.sumobot.ycor(), self.sumobot.dx, self.sumobot.dy, self.enemy.xcor(), self.enemy.ycor()] # 6
+        state = [self.sumobot.xcor(), self.sumobot.ycor(), self.enemy.xcor(), self.enemy.ycor()] # 4
         return self.reward, state, self.done
     
     
