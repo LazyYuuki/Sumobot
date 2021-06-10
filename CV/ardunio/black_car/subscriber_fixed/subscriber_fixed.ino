@@ -1,15 +1,17 @@
-#include <ESP8266WiFi.h> 
+#include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include "mecanum_wheel_1.h"
+#include <cppQueue.h>
+#include "imu.h"
 #define MAX_MSG_LEN (128)
 
 
 const char* ssid = "RoboWifi";
 const char* password = "73333449";
-const char *serverHostname = "192.168.1.22";
+const char *serverHostname = "192.168.1.13";
 // const IPAddress serverIPAddress(192, 168, 1, 3);
-const char *topic = "rl/movement";
+const char *topic = "raspberry/bot";
 const char* mqtt_username = "sumobot";
 const char* mqtt_password = "sumobot";
 WiFiClient espClient;
@@ -17,7 +19,18 @@ PubSubClient client(espClient);
 
 StaticJsonDocument<60> jsonBuffer;
 
+cppQueue  q(sizeof(scaleddata), 2, FIFO); // Instantiate queue
+
+float angleDisplacement = 0; // Angle of bot in Z axis
+
 void setup() {
+
+  Wire.begin();
+  // Configure serial port for debugging
+  Serial.begin(115200);
+
+  mpu6050Begin(MPU_addr);
+  setMPU6050scales(MPU_addr, 0b00000000, 0b00010000);
 
   // Set all the motor control pins to outputs
 
@@ -29,7 +42,7 @@ void setup() {
   pinMode(inLB2, OUTPUT);
   pinMode(inRB1, OUTPUT);
   pinMode(inRB2, OUTPUT);
-  
+
   // Turn off motors - Initial state
   digitalWrite(inLF1, LOW);
   digitalWrite(inLF2, LOW);
@@ -39,35 +52,51 @@ void setup() {
   digitalWrite(inLB2, LOW);
   digitalWrite(inRB1, LOW);
   digitalWrite(inRB2, LOW);
- 
-  // Configure serial port for debugging
-  Serial.begin(115200);
+
   // Initialise wifi connection - this will wait until connected
   connectWifi();
-  // connect to MQTT server  
-client.setServer(serverHostname, 1883);
-client.setCallback(callback);
+  // connect to MQTT server
+  client.setServer(serverHostname, 1883);
+  client.setCallback(callback);
 
-while (!client.connected()) {
-  Serial.println("Connecting to MQTT Broker!"); 
-  if(client.connect("ESP", mqtt_username, mqtt_password)){
-    Serial.println("Connected");
-  }
+  while (!client.connected()) {
+    Serial.println("Connecting to MQTT Broker!");
+    if (client.connect("ESP", mqtt_username, mqtt_password)) {
+      Serial.println("Connected");
+    }
 
-  else{
-    Serial.println("Failed to connect");
-    Serial.println(client.state());
-    delay(200);
-  }
-    
+    else {
+      Serial.println("Failed to connect");
+      Serial.println(client.state());
+      delay(200);
+    }
+
   }
 
   client.subscribe(topic);
-  
+
 }
 
 void loop() {
-    client.loop();
+  client.loop();
+  scaleddata values;
+  values = imuRun();
+  scaleddata oldData;
+  if (sizeof(q) > 1)
+  {
+    q.pop(&oldData);
+  }
+  q.push(&values);
+  float timeDifference = (values.timePass - oldData.timePass);
+  angleDisplacement += (timeDifference * values.GyZ) / 1000;
+  Serial.println(values.GyZ);
+  Serial.println(oldData.GyZ);
+  Serial.println(angleDisplacement);
+  String myString;
+  myString = String(angleDisplacement);
+  char Buf[50];
+  myString.toCharArray(Buf, 50);
+  client.publish("raspberry/imu", Buf);
 }
 
 void connectWifi() {
@@ -86,7 +115,7 @@ void connectWifi() {
 }
 
 void connectMQTT() {
-  // Wait until we're connected 
+  // Wait until we're connected
   while (!client.connect(serverHostname, mqtt_username, mqtt_password)) {
     // Create a random client ID
     String clientId = "ESP8266-";
@@ -105,28 +134,48 @@ void connectMQTT() {
 
 void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
   // copy payload to a static string
-static char message[MAX_MSG_LEN+1];
+  static char message[MAX_MSG_LEN + 1];
   if (msgLength > MAX_MSG_LEN) {
     msgLength = MAX_MSG_LEN;
   }
   strncpy(message, (char *)msgPayload, msgLength);
   message[msgLength] = '\0';
-  
-//  Serial.printf("topic %s, message received: %s\n", msgTopic, message);
+
+  //  Serial.printf("topic %s, message received: %s\n", msgTopic, message);
   DeserializationError err = deserializeJson(jsonBuffer, msgPayload);
-//  JsonObject& root = jsonBuffer.parseObject(msgPayload);
+  //  JsonObject& root = jsonBuffer.parseObject(msgPayload);
   if (err) {
-    Serial.print(F("deserializeJson() failed with code ")); 
+    Serial.print(F("deserializeJson() failed with code "));
     Serial.println(err.c_str());
   }
-  int move = jsonBuffer["move"];
-  int cw = jsonBuffer["cw"];
-  Serial.println(move);
-  if(move ==1 && cw == 1)
-    moveFdSlow();
-  else if(move == 1 && cw == 0)
-    moveBdSlow();
-  else if (move == 0)
-    allStop();
+  int action = jsonBuffer["move"];
+  switch (action) {
+    case 0:
+      allStop();
+      break;
+    case 1:
+      // turn left
+      leftBackBd();
+      rightFrontBd();
+      break;
+    case 2:
+      // turn right
+      leftBackFd();
+      rightFrontFd();
+      break;
+    case 3:
+      // forward
+      leftBackFd();
+      rightBackBd();
+      break;
+    case 4:
+      // backward
+      leftBackBd();
+      rightBackFd();
+      break;
+    default:
+      allStop();
+      break;
+  }
 
 }
