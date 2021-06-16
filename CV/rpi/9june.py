@@ -1,17 +1,15 @@
-
-import serial
 import math
 import paho.mqtt.client as mqtt
 import time
 import json 
 import numpy as np
-# from keras.models import load_model
 
-movement = ["do nothing", "left", "right", "up", "down", "top right", "top left", "bottom right", "bottom left"]
-
+<<<<<<< HEAD
 #angle = ""
 
 ser=serial.Serial('/dev/ttyACM0',9600)
+=======
+>>>>>>> e3703dffe59d326b24200bdac0186624a3600403
 mqtt_username = "sumobot"
 mqtt_password = "sumobot"
 
@@ -25,6 +23,7 @@ def on_message(client, userdata, message):
     #print(angle)
 
 client.on_connect = on_connect
+<<<<<<< HEAD
 client.connect("raspberrypi", 1883, 60)
 client.on_message = on_message
 client.subscribe("raspberry/imu")
@@ -57,4 +56,18 @@ while True:
         #client.publish('raspberry/new', payload=payload_json, qos = 0, retain=False)
     
    
+=======
+client.connect("192.168.1.13", 1883, 60)
+
+payload_dict = {"cw": True, "move": 1}
+payload_json = json.dumps(payload_dict)
+client.publish('raspberry/bot', payload=payload_json, qos = 0, retain=False)
+time.sleep(2)
+payload_dict = {"cw": True, "move": 0}
+payload_json = json.dumps(payload_dict)
+client.publish('raspberry/bot', payload=payload_json, qos = 0, retain=False)
+
+       
+
+>>>>>>> e3703dffe59d326b24200bdac0186624a3600403
 
