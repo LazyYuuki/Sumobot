@@ -47,7 +47,7 @@ scaleddata imuRun() {
   rawdata next_sample;
   
   next_sample = mpu6050Read(MPU_addr, false);
-  values = convertRawToScaled(MPU_addr, next_sample, true);
+  values = convertRawToScaled(MPU_addr, next_sample, false);
   return values;
 
   // delay(5000); // Wait 5 seconds and scan again

@@ -2,10 +2,7 @@
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include "mecanum_wheel_1.h"
-#include <cppQueue.h>
-#include "imu.h"
 #define MAX_MSG_LEN (128)
-
 
 const char* ssid = "RoboWifi";
 const char* password = "73333449";
@@ -19,19 +16,9 @@ PubSubClient client(espClient);
 
 StaticJsonDocument<60> jsonBuffer;
 
-cppQueue  q(sizeof(scaleddata), 2, FIFO); // Instantiate queue
-
-float angleDisplacement = 0; // Angle of bot in Z axis
-
 void setup() {
-
-  Wire.begin();
   // Configure serial port for debugging
   Serial.begin(115200);
-
-  mpu6050Begin(MPU_addr);
-  setMPU6050scales(MPU_addr, 0b00000000, 0b00010000);
-
   // Set all the motor control pins to outputs
 
   pinMode(inLF1, OUTPUT);
@@ -79,24 +66,6 @@ void setup() {
 
 void loop() {
   client.loop();
-  scaleddata values;
-  values = imuRun();
-  scaleddata oldData;
-  if (sizeof(q) > 1)
-  {
-    q.pop(&oldData);
-  }
-  q.push(&values);
-  float timeDifference = (values.timePass - oldData.timePass);
-  angleDisplacement += (timeDifference * values.GyZ) / 1000;
-  Serial.println(values.GyZ);
-  Serial.println(oldData.GyZ);
-  Serial.println(angleDisplacement);
-  String myString;
-  myString = String(angleDisplacement);
-  char Buf[50];
-  myString.toCharArray(Buf, 50);
-  client.publish("raspberry/imu", Buf);
 }
 
 void connectWifi() {
@@ -159,7 +128,7 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
       break;
     case 2:
       // turn right
-      moveRight()
+      moveRight();
       break;
     case 3:
       // forward
@@ -171,7 +140,7 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
       break;
     case 5:
       // diagonalDownLeft
-      diagonalDownLeft()();
+      diagonalDownLeft();
       break;
     case 6:
       // diagonalUpRight
@@ -185,11 +154,11 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
       // diagonalDownRight
       diagonalDownRight();
       break;
-    case 8:
+    case 9:
       // turnClockwise
       turnClockwise();
       break;
-    case 8:
+    case 10:
       // turnAntiClockwise
       turnAntiClockwise();
       break;
