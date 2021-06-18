@@ -1,7 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
-#include "mecanum_wheel_1.h"
 #include <cppQueue.h>
 #include "imu.h"
 #define MAX_MSG_LEN (128)
@@ -32,32 +31,10 @@ void setup() {
   mpu6050Begin(MPU_addr);
   setMPU6050scales(MPU_addr, 0b00000000, 0b00010000);
 
-  // Set all the motor control pins to outputs
-
-  pinMode(inLF1, OUTPUT);
-  pinMode(inLF2, OUTPUT);
-  pinMode(inRF1, OUTPUT);
-  pinMode(inRF2, OUTPUT);
-  pinMode(inLB1, OUTPUT);
-  pinMode(inLB2, OUTPUT);
-  pinMode(inRB1, OUTPUT);
-  pinMode(inRB2, OUTPUT);
-
-  // Turn off motors - Initial state
-  digitalWrite(inLF1, LOW);
-  digitalWrite(inLF2, LOW);
-  digitalWrite(inRF1, LOW);
-  digitalWrite(inRF2, LOW);
-  digitalWrite(inLB1, LOW);
-  digitalWrite(inLB2, LOW);
-  digitalWrite(inRB1, LOW);
-  digitalWrite(inRB2, LOW);
-
   // Initialise wifi connection - this will wait until connected
   connectWifi();
   // connect to MQTT server
   client.setServer(serverHostname, 1883);
-  client.setCallback(callback);
 
   while (!client.connected()) {
     Serial.println("Connecting to MQTT Broker!");
@@ -72,13 +49,9 @@ void setup() {
     }
 
   }
-
-  client.subscribe(topic);
-
 }
 
 void loop() {
-  client.loop();
   scaleddata values;
   values = imuRun();
   scaleddata oldData;
@@ -130,72 +103,4 @@ void connectMQTT() {
       delay(2500);
     }
   }
-}
-
-void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
-  // copy payload to a static string
-  static char message[MAX_MSG_LEN + 1];
-  if (msgLength > MAX_MSG_LEN) {
-    msgLength = MAX_MSG_LEN;
-  }
-  strncpy(message, (char *)msgPayload, msgLength);
-  message[msgLength] = '\0';
-
-  //  Serial.printf("topic %s, message received: %s\n", msgTopic, message);
-  DeserializationError err = deserializeJson(jsonBuffer, msgPayload);
-  //  JsonObject& root = jsonBuffer.parseObject(msgPayload);
-  if (err) {
-    Serial.print(F("deserializeJson() failed with code "));
-    Serial.println(err.c_str());
-  }
-  int action = jsonBuffer["move"];
-  switch (action) {
-    case 0:
-      allStop();
-      break;
-    case 1:
-      // turn left
-      moveLeft();
-      break;
-    case 2:
-      // turn right
-      moveRight();
-      break;
-    case 3:
-      // forward
-      moveForwards();
-      break;
-    case 4:
-      // backward
-      moveBackwards();
-      break;
-    case 5:
-      // diagonalDownLeft
-      diagonalDownLeft();
-      break;
-    case 6:
-      // diagonalUpRight
-      diagonalUpRight();
-      break;
-    case 7:
-      // diagonalUpLeft
-      diagonalUpLeft();
-      break;
-    case 8:
-      // diagonalDownRight
-      diagonalDownRight();
-      break;
-    case 9:
-      // turnClockwise
-      turnClockwise();
-      break;
-    case 10:
-      // turnAntiClockwise
-      turnAntiClockwise();
-      break;
-    default:
-      allStop();
-      break;
-  }
-
 }
