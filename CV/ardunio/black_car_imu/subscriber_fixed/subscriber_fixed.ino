@@ -61,15 +61,25 @@ void loop() {
   }
   q.push(&values);
   float timeDifference = (values.timePass - oldData.timePass);
-  angleDisplacement += (timeDifference * values.GyZ) / 1000;
-  Serial.println(values.GyZ);
-  Serial.println(oldData.GyZ);
-  Serial.println(angleDisplacement);
+  float newAngle = (timeDifference * values.GyZ) / 1000;
+  Serial.println(newAngle);
+  if (newAngle > 0.1 || newAngle < -0.1)
+  {
+    angleDisplacement += newAngle;
+  }
+  // Serial.println(values.GyZ);
+  // Serial.println(oldData.GyZ);
+  // Serial.println(angleDisplacement);
   String myString;
   myString = String(angleDisplacement);
   char Buf[50];
   myString.toCharArray(Buf, 50);
+  String myString2;
+  myString2 = String(newAngle);
+  char Buf2[50];
+  myString.toCharArray(Buf2, 50);
   client.publish("raspberry/imu", Buf);
+  client.publish("raspberry/imu", Buf2);
 }
 
 void connectWifi() {
