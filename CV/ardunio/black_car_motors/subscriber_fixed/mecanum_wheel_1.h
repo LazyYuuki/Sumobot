@@ -122,10 +122,10 @@ void moveBackwards(){
 }
 
 void moveRight(){
-  rightFrontFd();
   leftBackFd();
-  rightBackBd();
   leftFrontBd();
+  rightFrontFd();
+  rightBackBd();
 }
 
 void moveLeft(){
