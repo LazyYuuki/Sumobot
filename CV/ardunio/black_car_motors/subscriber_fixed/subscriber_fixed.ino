@@ -118,6 +118,7 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
     Serial.println(err.c_str());
   }
   int action = jsonBuffer["move"];
+  Serial.println(action);
   switch (action) {
     case 0:
       allStop();

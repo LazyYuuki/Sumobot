@@ -1,10 +1,10 @@
 // Motor A connections
 //1,2 is for left front, 3,4 is for right front
 //7,8 is for left back, 5,6 is for right back
-int inRF1 = D4;
-int inRF2 = D3;
-int inLF1 = D0;
-int inLF2 = D1;
+int inRF1 = D3;
+int inRF2 = D2;
+int inLF1 = D1;
+int inLF2 = D0;
 int inRB1 = D8;
 int inRB2 = D7;
 int inLB1 = D5;
