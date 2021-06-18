@@ -1,9 +1,8 @@
-# Find Line Segments Example
-#
-# This example shows off how to find line segments in the image. For each line object
-# found in the image a line object is returned which includes the line's rotation.
-# find_line_segments() finds finite length lines (but is slow).
-# Use find_line_segments() to find non-infinite lines (and is fast).
+#   ___       _                        _____   __   __ _ _     
+#  / _ \ _ _ | |_  _   ___ _ _  ___   / __\ \ / /  / _(_) |___ 
+# | (_) | ' \| | || | / _ \ ' \/ -_) | (__ \ V /  |  _| | / -_)
+#  \___/|_||_|_|\_, | \___/_||_\___|  \___| \_/   |_| |_|_\___|
+#               |__/                                           
 enable_lens_corr = False # turn on for straighter lines...
 import sensor, image, time, math
 from pyb import UART
