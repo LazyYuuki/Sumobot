@@ -48,7 +48,7 @@ void setup() {
 
   while (!client.connected()) {
     Serial.println("Connecting to MQTT Broker!");
-    if (client.connect("ESP", mqtt_username, mqtt_password)) {
+    if (client.connect("ESP2", mqtt_username, mqtt_password)) {
       Serial.println("Connected");
     }
 

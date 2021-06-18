@@ -139,14 +139,14 @@ void turnClockwise(){
   leftFrontFd();
   leftBackFd();
   rightFrontBd();
-  leftBackBd();
+  rightBackBd();
 }
 
 void turnAntiClockwise(){
   leftFrontBd();
   leftBackBd();
   rightFrontFd();
-  leftBackFd();
+  rightBackFd();
 }
 
 
