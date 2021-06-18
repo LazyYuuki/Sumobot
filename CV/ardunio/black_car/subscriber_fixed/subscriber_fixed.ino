@@ -155,23 +155,43 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
       break;
     case 1:
       // turn left
-      leftBackBd();
-      rightFrontBd();
+      moveLeft();
       break;
     case 2:
       // turn right
-      leftBackFd();
-      rightFrontFd();
+      moveRight()
       break;
     case 3:
       // forward
-      leftBackFd();
-      rightBackBd();
+      moveForwards();
       break;
     case 4:
       // backward
-      leftBackBd();
-      rightBackFd();
+      moveBackwards();
+      break;
+    case 5:
+      // diagonalDownLeft
+      diagonalDownLeft()();
+      break;
+    case 6:
+      // diagonalUpRight
+      diagonalUpRight();
+      break;
+    case 7:
+      // diagonalUpLeft
+      diagonalUpLeft();
+      break;
+    case 8:
+      // diagonalDownRight
+      diagonalDownRight();
+      break;
+    case 8:
+      // turnClockwise
+      turnClockwise();
+      break;
+    case 8:
+      // turnAntiClockwise
+      turnAntiClockwise();
       break;
     default:
       allStop();
