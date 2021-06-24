@@ -74,7 +74,7 @@ while True:
     #stop condition
     if sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) > 20:
         move_publish(0)
-        break
+        
 
     #move condition
     elif sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) < 10:
@@ -83,119 +83,119 @@ while True:
             # enemy is in second or third quadrant respect to robot and robot is at the right of the arena
             if (225 < angle < 270 and 135 < arena_angle < 225) or (90 < angle < 135 and 135 < arena_angle < 225):
                 move_publish(1)
-                break
+                
             elif (45 < angle < 90 and 45 < arena_angle < 135) or (angle > 315 and 225 < arena_angle < 315):
                 move_publish(1)
-                break
+                
 
             # enemy is in second and third quadrant respect to robot and robot is at the bottom and top of the arena
             elif (90 < angle < 135 and 45 < angle < 90) or (225 < angle < 270 and 270 < arena_angle < 315):
                 move_publish(2)
-                break
+                
             # enemy is in first and fourth quadrant respect to robot and robot is at the bottom and top of the arena
             elif (45 < angle < 90 and 90 < angle < 135) or (270 < angle < 315 and 270 < arena_angle < 315):
                 move_publish(2)
-                break
+                
             # enemy is in first and fourth quadrant respect to robot and robot is at the left of the arena
             elif (270 < angle < 315 and 45 < arena_angle < 90) or (45 < angle < 90 and 270 < arena_angle < 315):
                 move_publish(2)
-                break
+                
             # enemy in fourth and third quadrant and robot in the left and right side of the arena
             elif (angle < 315 and arena_angle < 45) or (180 < angle < 225 and 135 < arena_angle < 180):
                 move_publish(3)
-                break
+                
             # enemy on the first and second quadrant with respect to robot and robot at the bottom of the arena
             elif (angle < 45 and 45 < arena_angle < 135) or (135 < angle < 180 and 45 < arena_angle < 135):
                 move_publish(3)
-                break
+                
             # enemy on the left and right of the robot and robot at the top of the arena
             elif (180 < angle < 225 and 225 < arena_angle < 270) or (angle < 315 and 270 < arena_angle < 315):
                 move_publish(4)
-                break
+                
             # enemy on the right and left of the robot and the robot on the left and right of the arena
             elif (45 < angle < 90 and arena_angle < 315) or (90 < angle < 135 and 180 < arena_angle < 225):
                 move_publish(4)
-                break
+                
             elif (90 < angle < 135 and 90 < arena_angle < 135) or ( angle > 270 and arena_angle > 315):
                 move_publish(5)
-                break
+                
             elif (angle > 315 and arena_angle < 45) or (90 < angle < 180 and 45 < arena_angle < 90):
                 move_publish(5)
-                break
+                
             elif((angle < 45 or angle > 315) and 45 < arena_angle < 90) or (225 < angle < 270 and 225 < arena_angle < 270):
                 move_publish(6)
-                break
+                
             elif (180 < angle < 270 and 135 < arena_angle < 180) or (angle < 90 and 90 < arena_angle < 135):
                 move_publish(6)
-                break
+                
             elif(45 < angle < 90 and arena_angle < 45) or (90 < angle < 180 and 225 < arena_angle < 270):
                 move_publish(7)
-                break
+                
             elif(180 < angle < 270 and 270 < arena_angle < 315) or (angle < 90 and arena_angle > 315):
                 move_publish(7)
-                break
+                
             elif((angle < 45 or angle > 315) and 270 < arena_angle < 315) or (90 < angle < 180 and 135 < arena_angle < 180):
                 move_publish(8)
-                break
+                
             elif (angle < 270 and 225 < arena_angle < 270) or (90 < angle < 180 and 180 < arena_angle < 225):
                 move_publish(8)
-                break
+                
         #case of not being close to the arena
         else:
             # enemy in first and fourth quadrants
             if angle < 90 or angle > 270:
                 move_publish(1)
-                break
+                
             if 90 < angle < 270:
                 move_publish(2)
-                break
+                
             if(180 < angle):
                 move_publish(3)
-                break
+                
             if(45 < angle < 135):
                 move_publish(4)
-                break
+                
             if(135 < angle < 315):
                 move_publish(5)
-                break
+                
             if(angle < 45 or angle > 225):
                 move_publish(6)
-                break
+                
             if(45 < arena_angle < 225):
                 move_publish(7)
-                break
+                
             if(angle > 315 or angle < 135):
                 move_publish(8)
-                break
+                
     #just close to the edge
     elif sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 32:
         # robot in first and fourth quadrants edges
         if 135 < arena_angle < 225:
             move_publish(1)       
-            break
+            
         # robot in left side edges
         if arena_angle < 45 or arena_angle > 315:
             move_publish(2)
-            break
+            
         #robot at the bottom of the arena
         if (arena_angle < 45 or 135 < angle < 180):
             move_publish(3)
-            break
+            
         # robot at the top of the arena
         if (225 < arena_angle < 315):
             move_publish(4)
-            break
+            
         if (135 < arena_angle < 315):
             move_publish(5)
-            break
+            
         if (45 < arena_angle < 225):
             move_publish(6)
-            break
+            
         if(45 < arena_angle < 225):
             move_publish(7)
-            break
+            
         if(135 < arena_angle < 315):
             move_publish(8)
-            break
+            
 
 
