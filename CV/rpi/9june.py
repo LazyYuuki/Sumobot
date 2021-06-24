@@ -44,9 +44,9 @@ while True:
     #for i in range(0, 5):
      #   time.sleep(2)
       #  print(movement[i])
-       # payload_dict = {"cw": True, "move": i}
-    payload_json = json.dumps(decode_list)
-    client.publish('raspberry/new', payload=payload_json, qos = 0, retain=False)
+    payload_dict = {"move": str(5)}
+    payload_json = json.dumps(payload_dict)
+    client.publish('raspberry/bot', payload=payload_json, qos = 0, retain=False)
         #time.sleep(0.5)
         #payload_dict = {"cw": True, "move": 0}
         #payload_json = json.dumps(payload_dict)
