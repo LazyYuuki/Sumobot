@@ -5,10 +5,10 @@ int inRF1 = D2;
 int inRF2 = D3;
 int inLF1 = D0;
 int inLF2 = D1;
-int inRB1 = D8;
-int inRB2 = D7;
-int inLB1 = D5;
-int inLB2 = D6;
+int inRB1 = D6;
+int inRB2 = D5;
+int inLB1 = D7;
+int inLB2 = D8;
 
 //Functions for wheels to not moving
 void leftFrontStp(){
