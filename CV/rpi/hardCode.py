@@ -39,7 +39,10 @@ decode_list = [0, 0, 0, 0, 0, 0, 0] #7 robotx, roboty, enemyx, enemyy, arena_rad
 def calculate_angle(robot_x, robot_y, enemy_x, enemy_y): #(x1,y1,x2,y2)
     myradians = math.atan2(enemy_y-robot_y, enemy_x-robot_x) # theta = tan^-1(dy/dx)
     mydegrees = math.degrees(myradians)
-    if(enemy_x > robot_x and enemy_y > robot_y):
+    if(enemy_x == robot_x):
+        mydegrees = 90
+        return mydegrees
+    elif(enemy_x > robot_x and enemy_y > robot_y):
         return mydegrees
     elif(enemy_x < robot_x and enemy_y > robot_y):
         return 180 - mydegrees
@@ -52,7 +55,10 @@ def calculate_angle(robot_x, robot_y, enemy_x, enemy_y): #(x1,y1,x2,y2)
 def calculate_arena_angle(robot_x, robot_y):
     myradians = math.atan2(robot_y, robot_x)
     mydegrees = math.degrees(myradians)
-    if(robot_x > 0 and robot_y > 0):
+    if(robot_x == 0):
+        mydegrees = 0
+        return mydegrees
+    elif(robot_x > 0 and robot_y > 0):
         return mydegrees
     elif(robot_x < 0 and robot_y > 0):
         return 180 - mydegrees
