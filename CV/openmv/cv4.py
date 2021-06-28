@@ -1,8 +1,8 @@
-#   ___       _                        _____   __   __ _ _     
-#  / _ \ _ _ | |_  _   ___ _ _  ___   / __\ \ / /  / _(_) |___ 
+#   ___       _                        _____   __   __ _ _
+#  / _ \ _ _ | |_  _   ___ _ _  ___   / __\ \ / /  / _(_) |___
 # | (_) | ' \| | || | / _ \ ' \/ -_) | (__ \ V /  |  _| | / -_)
 #  \___/|_||_|_|\_, | \___/_||_\___|  \___| \_/   |_| |_|_\___|
-#               |__/                                           
+#               |__/
 enable_lens_corr = False # turn on for straighter lines...
 import sensor, image, time, math
 from pyb import UART
@@ -76,9 +76,9 @@ while(True):
             #if math.sqrt(math.pow(x1-arena_x, 2) + math.pow(y1-arena_y, 2)) < radius-3:
                 #edge_x1, edge_y1, edge_x2, edge_y2 = x1, y1, x2, y2
                 #img.draw_line(l.line(), color = (255, 0, 0))
-    for r in img.find_rects(threshold = 15000):
+    for r in img.find_rects(threshold=20000):
         enemy_x, enemy_y, e_width, e_height = r.rect()
-        if math.sqrt(math.pow(enemy_x-center_x, 2) + math.pow(enemy_y-center_y, 2)) > 22:
+        if math.sqrt(math.pow(enemy_x-center_x, 2) + math.pow(enemy_y-center_y, 2)) > 18:
             img.draw_rectangle(r.rect(), color = (255, 0, 0))
             enemy_cx = enemy_x + e_width/2
             enemy_cy = enemy_y + e_height/2
