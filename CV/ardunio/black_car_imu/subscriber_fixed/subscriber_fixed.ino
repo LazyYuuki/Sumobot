@@ -14,8 +14,10 @@ const char* mqtt_username = "sumobot";
 const char* mqtt_password = "sumobot";
 MPU6050 mpu(Wire);
 unsigned long timer = 0;
+unsigned long timer2 = 0;
 WiFiClient espClient;
 PubSubClient client(espClient);
+float angle = 0;
 
 StaticJsonDocument<60> jsonBuffer;
 
@@ -51,23 +53,27 @@ void setup() {
   
   Serial.println(F("Calculating offsets, do not move MPU6050"));
   delay(1000);
-  // mpu.upsideDownMounting = true; // uncomment this line if the MPU6050 is mounted upside-down
+   mpu.upsideDownMounting = true; // uncomment this line if the MPU6050 is mounted upside-down
   mpu.calcOffsets(); // gyro and accelero
   Serial.println("Done!\n");
 }
 
 void loop() {
+    if (!client.connected()) {
+    connectWifi();
+  }
+  client.loop();
    mpu.update();
   if((millis()-timer)>10){ // print data every 10ms
-  float angle = mpu.getAngleZ();
+  angle = mpu.getAngleZ();
   Serial.print("\tZ : ");
   Serial.println(angle);
-  String myString;
-  myString = String(angle);
-  char Buf[50];
-  myString.toCharArray(Buf, 50);
-  client.publish("raspberry/imu", Buf);
-  timer = millis();  
+  if((angle > 10 || angle < -10) && (millis()-timer2)>1000){
+    Serial.println("will publish");
+    client.publish("raspberry/imu", "1"); 
+    timer2 = millis();
+    }
+   timer = millis(); 
   }
 }
 
