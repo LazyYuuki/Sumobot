@@ -68,9 +68,14 @@ void loop() {
   angle = mpu.getAngleZ();
   Serial.print("\tZ : ");
   Serial.println(angle);
-  if((angle > 10 || angle < -10) && (millis()-timer2)>1000){
+  if((angle > 10 || angle < -10) && (millis()-timer2)>500){
     Serial.println("will publish");
+    if(angle > 10){
+      //1 for cw, 2 for anticw
     client.publish("raspberry/imu", "1"); 
+    } else {
+      client.publish("raspberry/imu", "2"); 
+    }
     timer2 = millis();
     }
    timer = millis(); 
