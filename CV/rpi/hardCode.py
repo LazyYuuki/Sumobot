@@ -93,6 +93,7 @@ while True:
     #print(sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)))
     #print(sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) < 40)
     #print(sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)))
+    
     #stop condition
     if sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) > 45:
         move_publish(0)
