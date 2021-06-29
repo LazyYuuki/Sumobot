@@ -13,7 +13,7 @@ const char* mqtt_username = "sumobot";
 const char* mqtt_password = "sumobot";
 unsigned long startMillis;  //some global variables available anywhere in the program
 unsigned long currentMillis;
-const unsigned long period = 2000;  //the value is a number of milliseconds
+const unsigned long period = 50;  //the value is a number of milliseconds
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -24,7 +24,7 @@ void setup() {
   Serial.begin(115200);
   // Set all the motor control pins to outputs
   startMillis = millis();  //initial start time
-  
+
   pinMode(inLF1, OUTPUT);
   pinMode(inLF2, OUTPUT);
   pinMode(inRF1, OUTPUT);
@@ -112,7 +112,7 @@ void connectMQTT() {
 }
 
 void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
-  startMillis = millis(); 
+  startMillis = millis();
   // copy payload to a static string
   static char message[MAX_MSG_LEN + 1];
   if (msgLength > MAX_MSG_LEN) {
@@ -161,14 +161,14 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
       diagonalDownLeft();
       break;
     case 6:
-      // diagonalUpRight
-      Serial.println("Receive: upright");
-      diagonalUpRight();
-      break;
-    case 7:
       // diagonalUpLeft
       Serial.println("Receive: upleft");
       diagonalUpLeft();
+      break;
+    case 7:
+      // diagonalUpRight
+      Serial.println("Receive: upright");
+      diagonalUpRight();
       break;
     case 8:
       // diagonalDownRight
