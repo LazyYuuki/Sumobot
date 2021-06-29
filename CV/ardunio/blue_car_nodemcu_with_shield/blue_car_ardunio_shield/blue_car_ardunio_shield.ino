@@ -1,7 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
-#include "mecanum_wheel_1.h"
 #define MAX_MSG_LEN (128)
 
 const char* ssid = "RoboWifi";
@@ -11,6 +10,9 @@ const char *serverHostname = "192.168.1.17";
 const char *topic = "raspberry/bot";
 const char* mqtt_username = "sumobot";
 const char* mqtt_password = "sumobot";
+unsigned long startMillis;  //some global variables available anywhere in the program
+unsigned long currentMillis;
+const unsigned long period = 2000;  //the value is a number of milliseconds
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -18,27 +20,9 @@ StaticJsonDocument<60> jsonBuffer;
 
 void setup() {
   // Configure serial port for debugging
-  Serial.begin(9600);
+  Serial.begin(115200);
   // Set all the motor control pins to outputs
-
-  pinMode(inLF1, OUTPUT);
-  pinMode(inLF2, OUTPUT);
-  pinMode(inRF1, OUTPUT);
-  pinMode(inRF2, OUTPUT);
-  pinMode(inLB1, OUTPUT);
-  pinMode(inLB2, OUTPUT);
-  pinMode(inRB1, OUTPUT);
-  pinMode(inRB2, OUTPUT);
-
-  // Turn off motors - Initial state
-  digitalWrite(inLF1, LOW);
-  digitalWrite(inLF2, LOW);
-  digitalWrite(inRF1, LOW);
-  digitalWrite(inRF2, LOW);
-  digitalWrite(inLB1, LOW);
-  digitalWrite(inLB2, LOW);
-  digitalWrite(inRB1, LOW);
-  digitalWrite(inRB2, LOW);
+  startMillis = millis();  //initial start time
 
   // Initialise wifi connection - this will wait until connected
   connectWifi();
@@ -48,7 +32,7 @@ void setup() {
 
   while (!client.connected()) {
     Serial.println("Connecting to MQTT Broker!");
-    if (client.connect("ESP2", mqtt_username, mqtt_password)) {
+    if (client.connect("ESP4", mqtt_username, mqtt_password)) {
       Serial.println("Connected");
     }
 
@@ -66,6 +50,12 @@ void setup() {
 
 void loop() {
   client.loop();
+  currentMillis = millis();  //get the current "time" (actually the number of milliseconds since the program started)
+  if (currentMillis - startMillis >= period)  //test whether the period has elapsed
+  {
+//    String str = "stop";
+    Serial.println(0);
+  }
 }
 
 void connectWifi() {
@@ -102,6 +92,7 @@ void connectMQTT() {
 }
 
 void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
+  startMillis = millis();
   // copy payload to a static string
   static char message[MAX_MSG_LEN + 1];
   if (msgLength > MAX_MSG_LEN) {
@@ -119,52 +110,65 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
   }
   int action = jsonBuffer["move"];
   Serial.println(action);
+//  String str;
 //  switch (action) {
 //    case 0:
-//      Serial.println(0);
+//      str = "stop";
+//      Serial.write("stop");
 //      break;
 //    case 1:
 //      // turn left
-//      Serial.println(1);
+//      str = "left";
+//      Serial.write("left");
 //      break;
 //    case 2:
 //      // turn right
-//      Serial.println(2);
+//      str = "right";
+//      Serial.write("right");
 //      break;
 //    case 3:
 //      // forward
-//      Serial.println(4);
+//      str = "forwards";
+//      Serial.write("forwards");
 //      break;
 //    case 4:
 //      // backward
-//      Serial.println(5);
+//      str = "backwards";
+//      Serial.write("backwards");
 //      break;
 //    case 5:
 //      // diagonalDownLeft
-//      Serial.println(5);
+//      str = "downleft";
+//      Serial.write("downleft");
 //      break;
 //    case 6:
-//      // diagonalUpRight
-//      Serial.println(6);
+//      // diagonalUpLeft
+//      str = "upleft";
+//      Serial.write("upleft");
 //      break;
 //    case 7:
-//      // diagonalUpLeft
-//      Serial.println(7);
+//      // diagonalUpRight
+//      str = "upright";
+//      Serial.write("upright");
 //      break;
 //    case 8:
 //      // diagonalDownRight
-//      Serial.println(8);
+//      str = "downright";
+//      Serial.write("downright");
 //      break;
 //    case 9:
 //      // turnClockwise
-//      Serial.println(9);
+//      str = "clockwise";
+//      Serial.write("clockwise");
 //      break;
 //    case 10:
 //      // turnAntiClockwise
-//      Serial.println(10);
+//      str = "anticlockwise";
+//      Serial.write("anticlockwise");
 //      break;
 //    default:
-//      allStop();
+//      str = "stop";
+//      Serial.write("stop");
 //      break;
 //  }
 
