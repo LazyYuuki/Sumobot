@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 import time, json, serial
 import numpy as np
 
-ser=serial.Serial('/dev/ttyACM0',115200)
+ser=serial.Serial('/dev/ttyACM1',115200)
 mqtt_username = "sumobot"
 mqtt_password = "sumobot"
 robot_topic = "raspberry/bot"
@@ -66,6 +66,7 @@ def calculate_arena_angle(robot_x, robot_y):
         return 180 + mydegrees
     else:
         return 0
+    
 
 while True:
     #client.loop()
@@ -86,53 +87,66 @@ while True:
     # calculate the angle and arena_angle
     angle = 0
     arena_angle = 0
-    #print(decode_list)
+    print(decode_list)
     angle = calculate_angle(decode_list[0], decode_list[1], decode_list[2], decode_list[3])
     arena_angle = calculate_arena_angle(decode_list[0], decode_list[1])
-    print(angle, arena_angle)
+#     print(angle, arena_angle)
     #print(sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)))
     #print(sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) < 40)
     #print(sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)))
     
     #stop condition
-    if sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) > 45:
+    if sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) > 30:
+        print("here 0")
         move_publish(0)
 
-    #move condition
-    elif sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) < 45:
+#     #move condition
+    elif sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) < 30 :
         # close to the edge of the arena
-        if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 23:
+        if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 21:
+
             #case 2
             if (90 < angle < 180 and 0 < arena_angle < 110):
-                move_publish(1)
+                print('here 2')
+                move_publish(2)
             
             #case 3
             elif(0 < angle < 90 and 70 < arena_angle < 180):
-                print("here")
-                move_publish(2)
+                print("here 1")
+                move_publish(1)
             #case 5    
-            elif(90 < angle < 180 and 135 < arena_angle < 225):
+            elif(90 < angle < 180 and 150 < arena_angle < 225):
+                print("here 3")
                 move_publish(3)
             #case 6
             elif(180 < angle < 270 and 135 < arena_angle < 210):
+                print("here 5")
                 move_publish(5)
                 
             #case 8
             elif(270 < angle < 360 and 180 < arena_angle < 290):
+                print("here 7")
                 move_publish(7)
                 
             #case 9
             elif(180 < angle < 270 and arena_angle > 250):
+                print("here 6")
                 move_publish(6)
                 
             #case 11
             elif(270 < angle < 360 and (arena_angle < 90 or arena_angle > 340)):
-                
+                print("here 8")
                 move_publish(8)
                 
             #case 12
             elif(angle < 90 and (270 < arena_angle or arena_angle < 20)):
+                print("here 62")
                 move_publish(6)
+
+            #case 1, 4, 7, 10:
+            elif(angle == 90 and arena_angle == 90) or (angle == 180 and arena_angle == 180) or (angle == 270 and arena_angle == 270) or (angle == 0 and arena_angle == 360):
+                print("here 02")
+                move_publish(0)
                 
             # enemy is in second or third quadrant respect to robot and robot is at the right of the arena
             elif (225 < angle < 270 and 135 < arena_angle < 225) or (90 < angle < 135 and 135 < arena_angle < 225):
@@ -142,7 +156,7 @@ while True:
             elif (45 < angle < 90 and 45 < arena_angle < 135) or (angle > 315 and 225 < arena_angle < 315):
                 
                 move_publish(1)
-
+# 
             # enemy is in second and third quadrant respect to robot and robot is at the bottom and top of the arena
             elif (90 < angle < 135 and 45 < angle < 90) or (225 < angle < 270 and 270 < arena_angle < 315):
                 print("1")
@@ -162,7 +176,7 @@ while True:
             # enemy in fourth and third quadrant and robot in the left and right side of the arena
             elif (angle < 315 and arena_angle < 45) or (180 < angle < 225 and 135 < arena_angle < 180):
                 move_publish(3)
-                
+#                 
             # enemy on the first and second quadrant with respect to robot and robot at the bottom of the arena
             elif (angle < 45 and 45 < arena_angle < 135) or (135 < angle < 180 and 45 < arena_angle < 135):
                 move_publish(3)
@@ -199,77 +213,80 @@ while True:
                 
                 move_publish(8)
                 
-#             elif (angle < 270 and 225 < arena_angle < 270) or (90 < angle < 180 and 180 < arena_angle < 225):
-#                 print(3)
-#                 move_publish(8)
+            elif (angle < 270 and 225 < arena_angle < 270) or (90 < angle < 180 and 180 < arena_angle < 225):            
+                move_publish(8)
             else:
+                print("here 03")
                 move_publish(0)
-                
+                    
         #case of not being close to the arena
         else:
             # enemy in first and fourth quadrants
             if angle < 90 or angle > 270:
-                print(3)
+                print("here 12")
                 move_publish(1)
                 
             elif 90 < angle < 270:
-                print("4")
+                print("here 22")
                 move_publish(2)
                 
             elif(180 < angle):
+                print("here 32")
                 move_publish(3)
                 
             elif(45 < angle < 135):
-                
+                print("here 42")
                 move_publish(4)
                 
             elif(135 < angle < 315):
-                
+                print("here 52")
                 move_publish(5)
                 
             elif(angle < 45 or angle > 225):
+                print("here 63")
                 move_publish(6)
                 
             elif(45 < arena_angle < 225):
+                print("here 72")
                 move_publish(7)
                 
             elif(angle > 315 or angle < 135):
+                print("here 82")
                 move_publish(8)
             else:
+                print("here 04")
                 move_publish(0)
-                
-                
+#                 
+#                 
     #just close to the edge
-    elif sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 32:
+    elif sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 23:
         # robot in first and fourth quadrants edges
         if 135 < arena_angle < 225:
-            move_publish(0)       
+            move_publish(1)       
             
         # robot in left side edges
         elif arena_angle < 45 or arena_angle > 315:
-            print("5")
-            move_publish(0)
+            move_publish(2)
             
         #robot at the bottom of the arena
-        elif (arena_angle < 45 or 135 < angle < 180):
-            move_publish(0)
+        elif (225 < arena_angle < 315):
+            move_publish(3)
             
         # robot at the top of the arena
-        elif (225 < arena_angle < 315):
-            print("iam here")
-            move_publish(0)
+        elif (45 < arena_angle < 135):
+            move_publish(4)
             
-        elif (135 < arena_angle < 315):
-            move_publish(0)
+        elif (135 < arena_angle < 180):
+            move_publish(5)
             
-        elif (45 < arena_angle < 225):
-            move_publish(0)
+        elif (315 < arena_angle < 360):
+            move_publish(6)
             
-        elif(45 < arena_angle < 225):
-            move_publish(0)
+        elif(180 < arena_angle < 225):
+            move_publish(7)
             
-        elif(135 < arena_angle < 315):
-            move_publish(0)
+        elif(0 < arena_angle < 45):
+            move_publish(8)
         else:
             move_publish(0)
     
