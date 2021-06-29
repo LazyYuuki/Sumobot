@@ -1,8 +1,8 @@
-#   ___       _                        _____   __   __ _ _     
-#  / _ \ _ _ | |_  _   ___ _ _  ___   / __\ \ / /  / _(_) |___ 
+#   ___       _                        _____   __   __ _ _
+#  / _ \ _ _ | |_  _   ___ _ _  ___   / __\ \ / /  / _(_) |___
 # | (_) | ' \| | || | / _ \ ' \/ -_) | (__ \ V /  |  _| | / -_)
 #  \___/|_||_|_|\_, | \___/_||_\___|  \___| \_/   |_| |_|_\___|
-#               |__/                                           
+#               |__/
 enable_lens_corr = False # turn on for straighter lines...
 import sensor, image, time, math
 from pyb import UART
@@ -62,31 +62,42 @@ while(True):
 
     min_line = 30
     max_line = 70
-    edge_x1 = 1000
+    edge_x1 = 0
     edge_x2 = 0
-    edge_y1 = 1000
+    edge_y1 = 0
     edge_y2 = 0
     offset = 2
     enemy_cx =0
     enemy_cy =0
+    num_of_seg = 0
     ### detect enemy robot
-    #for l in img.find_line_segments(merge_distance = 2, max_theta_diff = 5):
-        #x1, y1, x2, y2 = l.line()
-        #if math.sqrt(math.pow(x1-center_x, 2) + math.pow(y1-center_y, 2)) > 17:
-            #if math.sqrt(math.pow(x1-arena_x, 2) + math.pow(y1-arena_y, 2)) < radius-3:
-                #edge_x1, edge_y1, edge_x2, edge_y2 = x1, y1, x2, y2
-                #img.draw_line(l.line(), color = (255, 0, 0))
-    for r in img.find_rects(threshold = 15000):
-        enemy_x, enemy_y, e_width, e_height = r.rect()
-        if math.sqrt(math.pow(enemy_x-center_x, 2) + math.pow(enemy_y-center_y, 2)) > 22:
-            img.draw_rectangle(r.rect(), color = (255, 0, 0))
-            enemy_cx = enemy_x + e_width/2
-            enemy_cy = enemy_y + e_height/2
+    for l in img.find_line_segments(merge_distance = 2, max_theta_diff = 5):
+        x1, y1, x2, y2 = l.line()
+        if math.sqrt(math.pow(x1-center_x, 2) + math.pow(y1-center_y, 2)) > 13:
+            if math.sqrt(math.pow(x1-arena_x, 2) + math.pow(y1-arena_y, 2)) < radius-3:
+                edge_x1 += x2
+                edge_y1 += y2
+                edge_x1 += x1
+                edge_y1 += y1
+                num_of_seg += 2
+                img.draw_line(l.line(), color = (255, 0, 0))
+    if (edge_x1 != 0):
+        edge_x1 = edge_x1/num_of_seg
+        edge_y1 = edge_y1/num_of_seg
+        edge_x1 -= arena_x
+        edge_y1 -= arena_y
+    #for r in img.find_rects(threshold=20000):
+        #enemy_x, enemy_y, e_width, e_height = r.rect()
+        #if math.sqrt(math.pow(enemy_x-center_x, 2) + math.pow(enemy_y-center_y, 2)) > 16:
+            #img.draw_rectangle(r.rect(), color = (255, 0, 0))
+            #enemy_cx = enemy_x + e_width/2
+            #enemy_cy = enemy_y + e_height/2
     center_x -= arena_x
     center_y -= arena_y
     enemy_cx -= arena_x
     enemy_cy -= arena_y
 
+
     #print("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d" % (ours_x1, ours_y1, ours_x2, ours_y2, edge_x1, edge_y1, edge_x2, edge_y2, arena_x, arena_y))
-    print("%d, %d, %d, %d, %d, %d" % (center_x, center_y, enemy_cx, enemy_cy, radius, clock.fps()))
+    print("%d, %d, %d, %d, %d, %d" % (center_x, center_y, edge_x1, edge_y1, radius, clock.fps()))
 

@@ -11,9 +11,6 @@ const char *serverHostname = "192.168.1.17";
 const char *topic = "raspberry/bot";
 const char* mqtt_username = "sumobot";
 const char* mqtt_password = "sumobot";
-unsigned long startMillis;  //some global variables available anywhere in the program
-unsigned long currentMillis;
-const unsigned long period = 2000;  //the value is a number of milliseconds
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -21,10 +18,9 @@ StaticJsonDocument<60> jsonBuffer;
 
 void setup() {
   // Configure serial port for debugging
-  Serial.begin(115200);
+  Serial.begin(9600);
   // Set all the motor control pins to outputs
-  startMillis = millis();  //initial start time
-  
+
   pinMode(inLF1, OUTPUT);
   pinMode(inLF2, OUTPUT);
   pinMode(inRF1, OUTPUT);
@@ -52,7 +48,7 @@ void setup() {
 
   while (!client.connected()) {
     Serial.println("Connecting to MQTT Broker!");
-    if (client.connect("ESP3", mqtt_username, mqtt_password)) {
+    if (client.connect("ESP2", mqtt_username, mqtt_password)) {
       Serial.println("Connected");
     }
 
@@ -70,12 +66,6 @@ void setup() {
 
 void loop() {
   client.loop();
-  currentMillis = millis();  //get the current "time" (actually the number of milliseconds since the program started)
-  if (currentMillis - startMillis >= period)  //test whether the period has elapsed
-  {
-    allStop();
-    Serial.println("Timeout: Stoppp");
-  }
 }
 
 void connectWifi() {
@@ -112,7 +102,6 @@ void connectMQTT() {
 }
 
 void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
-  startMillis = millis(); 
   // copy payload to a static string
   static char message[MAX_MSG_LEN + 1];
   if (msgLength > MAX_MSG_LEN) {
@@ -130,64 +119,53 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
   }
   int action = jsonBuffer["move"];
   Serial.println(action);
-  switch (action) {
-    case 0:
-      allStop();
-      Serial.println("Receive: Stoppp");
-      break;
-    case 1:
-      // turn left
-      moveLeft();
-      Serial.println("Receive: left");
-      break;
-    case 2:
-      // turn right
-      moveRight();
-      Serial.println("Receive: right");
-      break;
-    case 3:
-      // forward
-      Serial.println("Receive: 4wards");
-      moveForwards();
-      break;
-    case 4:
-      // backward
-      Serial.println("Receive: backwards");
-      moveBackwards();
-      break;
-    case 5:
-      // diagonalDownLeft
-      Serial.println("Receive: downleft");
-      diagonalDownLeft();
-      break;
-    case 6:
-      // diagonalUpRight
-      Serial.println("Receive: upright");
-      diagonalUpRight();
-      break;
-    case 7:
-      // diagonalUpLeft
-      Serial.println("Receive: upleft");
-      diagonalUpLeft();
-      break;
-    case 8:
-      // diagonalDownRight
-      Serial.println("Receive: downright");
-      diagonalDownRight();
-      break;
-    case 9:
-      // turnClockwise
-      Serial.println("Receive: clockwise");
-      turnClockwise();
-      break;
-    case 10:
-      // turnAntiClockwise
-      Serial.println("Receive: anticlockwise");
-      turnAntiClockwise();
-      break;
-    default:
-      allStop();
-      break;
-  }
+//  switch (action) {
+//    case 0:
+//      Serial.println(0);
+//      break;
+//    case 1:
+//      // turn left
+//      Serial.println(1);
+//      break;
+//    case 2:
+//      // turn right
+//      Serial.println(2);
+//      break;
+//    case 3:
+//      // forward
+//      Serial.println(4);
+//      break;
+//    case 4:
+//      // backward
+//      Serial.println(5);
+//      break;
+//    case 5:
+//      // diagonalDownLeft
+//      Serial.println(5);
+//      break;
+//    case 6:
+//      // diagonalUpRight
+//      Serial.println(6);
+//      break;
+//    case 7:
+//      // diagonalUpLeft
+//      Serial.println(7);
+//      break;
+//    case 8:
+//      // diagonalDownRight
+//      Serial.println(8);
+//      break;
+//    case 9:
+//      // turnClockwise
+//      Serial.println(9);
+//      break;
+//    case 10:
+//      // turnAntiClockwise
+//      Serial.println(10);
+//      break;
+//    default:
+//      allStop();
+//      break;
+//  }
 
 }
