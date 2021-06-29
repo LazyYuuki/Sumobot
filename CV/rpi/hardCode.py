@@ -104,7 +104,6 @@ while True:
     elif sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) < 30 :
         # close to the edge of the arena
         if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 21:
-
             #case 2
             if (90 < angle < 180 and 0 < arena_angle < 110):
                 print('here 2')
@@ -246,7 +245,7 @@ while True:
                 print("here 63")
                 move_publish(6)
                 
-            elif(45 < arena_angle < 225):
+            elif(45 < angle < 225):
                 print("here 72")
                 move_publish(7)
                 

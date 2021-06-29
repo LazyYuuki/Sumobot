@@ -1,3 +1,4 @@
+from CV.rpi.hardCode import move_publish
 import math
 from math import sqrt
 import random
@@ -137,9 +138,7 @@ class Sumobot():
 
     def reset(self):
         # nodemcu to go into reset mode
-        payload_dict = {"move": str(13)} # mode 13 is special 
-        payload_json = json.dumps(payload_dict)
-        self.client.publish(robot_topic, payload=payload_json, qos = 0, retain=False)
+        self.move_publish(13)
         return state 
 
     def step(self, action):
@@ -153,7 +152,7 @@ class Sumobot():
         
         # 0 do nothing
         if action == 0:
-            if sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) > 45:
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) > 30:
                 self.reward += 1000
             else:
                 self.reward -= 1000
@@ -163,70 +162,76 @@ class Sumobot():
         # 1 move left
         elif action == 1:
             #close to the enemy
-            if ssqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) < 45:
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 30 :
+                self.move_publish(1) 
                 # close to the edge of the arena
-                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:
-                    # enemy is in second or third quadrant respect to robot and robot is at the right of the arena
-                    if (225 < angle < 270 and 135 < arena_angle < 225) or (90 < angle < 135 and 135 < arena_angle < 225):
+                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 21:
+                    #case 3
+                    if(0 < angle < 90 and 70 < arena_angle < 180):
+                        print("here 1")
                         self.reward += 2000
+                    # # enemy is in second or third quadrant respect to robot and robot is at the right of the arena
+                    # #change this to move_right
+                    # elif (225 < angle < 270 and 135 < arena_angle < 225) or (90 < angle < 135 and 135 < arena_angle < 225):
+                    #     self.reward += 2000
                         
-                    # enemy is in first or fourth quadrant respect to robot and robot is at the bottom and top of the arena
-                    elif (45 < angle < 90 and 45 < arena_angle < 135) or (angle > 315 and 225 < arena_angle < 315):
-                        self.reward += 1000
+                    # # enemy is in first or fourth quadrant respect to robot and robot is at the bottom and top of the arena
+                    # elif (45 < angle < 90 and 45 < arena_angle < 135) or (angle > 315 and 225 < arena_angle < 315):
+                    #     self.reward += 1000
                         
-                    # enemy is in second or third quadrant respect to robot and robot is at the bottom and top of the arena
-                    elif (90 < angle < 135 and 45 < arena_angle < 135) or (225 < angle < 270 and 225 < arena_angle < 315):
-                        self.reward -= 1000
+                    # # enemy is in second or third quadrant respect to robot and robot is at the bottom and top of the arena
+                    # elif (90 < angle < 135 and 45 < arena_angle < 135) or (225 < angle < 270 and 225 < arena_angle < 315):
+                    #     self.reward -= 1000
                         
-                    # robot in second and third quadrant edges and enemy presumably on the right of the robot
-                    elif arena_angle < 90 or arena_angle > 270:
-                        self.reward -= 5000
+                    # # robot in second and third quadrant edges and enemy presumably on the right of the robot
+                    # elif arena_angle < 90 or arena_angle > 270:
+                    #     self.reward -= 5000
                         
                 #case of not being close to the arena
                 else:
                     # enemy in first and fourth quadrants
                     if angle < 90 or angle > 270:
+                        print("here 12")
                         self.reward += 1000
                     # enemy in second and thrid quadrants
                     else:
                         self.reward -= 1000
             #just close to the edge
-            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:
+            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 23:
                 # robot in first and fourth quadrants edges
                 if 135 < arena_angle < 225:
                     self.reward += 4000
-                    
-                # robot in second and third quadrant edges
-                elif arena_angle < 90 or arena_angle > 270:
-                    self.reward -= 5000
-            # rewarding unjustified movement
-#             self.reward += 60
-            payload_dict = {"move": str(1)}
-            payload_json = json.dumps(payload_dict)
-            self.client.publish(robot_topic, payload=payload_json, qos = 0, retain=False) # comes in the action command
-            
+                # # robot in second and third quadrant edges
+                # elif arena_angle < 90 or arena_angle > 270:
+                #     self.reward -= 5000
+            self.move_publish(1)
 
+            
         # 2 move right           
         elif action == 2:
             # close to the enemy
-            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 10:
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 30 :
                 # close to the edge of the arena
-                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:
-                    # enemy is in second and third quadrant respect to robot and robot is at the bottom and top of the arena
-                    if (90 < angle < 135 and 45 < angle < 90) or (225 < angle < 270 and 270 < arena_angle < 315):
+                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 21:
+                    #case 2
+                    if (90 < angle < 180 and 0 < arena_angle < 110):
+                        print('here 2')
                         self.reward += 2000
+                    # # enemy is in second and third quadrant respect to robot and robot is at the bottom and top of the arena
+                    # elif (90 < angle < 135 and 45 < arena_angle < 90) or (225 < angle < 270 and 270 < arena_angle < 315):
+                    #     self.reward += 2000
                         
-                    # enemy is in first and fourth quadrant respect to robot and robot is at the bottom and top of the arena
-                    elif (45 < angle < 90 and 90 < angle < 135) or (270 < angle < 315 and 270 < arena_angle < 315):
-                        self.reward += 1000
+                    # # enemy is in first and fourth quadrant respect to robot and robot is at the bottom and top of the arena
+                    # elif (45 < angle < 90 and 90 < arena_angle < 135) or (270 < angle < 315 and 270 < arena_angle < 315):
+                    #     self.reward += 1000
                         
-                    # enemy is in first and fourth quadrant respect to robot and robot is at the left of the arena
-                    elif (270 < angle < 315 and 45 < arena_angle < 90) or (45 < angle < 90 and 270 < arena_angle < 315):
-                        self.reward += 1000
+                    # # enemy is in first and fourth quadrant respect to robot and robot is at the left of the arena
+                    # elif (270 < angle < 315 and 45 < arena_angle < 90) or (45 < angle < 90 and 270 < arena_angle < 315):
+                    #     self.reward += 1000
                         
-                    # robot in first and fourth quadrant edges and enemy presumably on the left side
-                    elif 90 < arena_angle < 270:
-                        self.reward -= 5000
+                    # # robot in first and fourth quadrant edges and enemy presumably on the left side
+                    # elif 90 < arena_angle < 270:
+                    #     self.reward -= 5000
                         
                 #case of not being close to the arena
                 else:
@@ -237,211 +242,216 @@ class Sumobot():
                     else:
                         self.reward -= 1000
             #just close to the edge
-            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:
+            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 23:
                 # robot in left side edges
                 if arena_angle < 45 or arena_angle > 315:
                     self.reward += 4000
-                    
-                # robot in right side edges
-                elif 135 < arena_angle < 225:
-                    self.reward -= 5000
-            payload_dict = {"move": str(2)}
-            payload_json = json.dumps(payload_dict)
-            self.client.publish(robot_topic, payload=payload_json, qos = 0, retain=False) # comes in the action command
+                # # robot in right side edges
+                # elif 135 < arena_angle < 225:
+                #     self.reward -= 5000
+            self.move_publish(2)
             
 
         # 3 move up   
         elif action == 3:
-            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 10:
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 30 :
                 # close to the edge of the arena
-                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:
-                    # enemy in fourth and third quadrant and robot in the left and right side of the arena
-                    if (angle < 315 and arena_angle < 45) or (180 < angle < 225 and 135 < arena_angle < 180):
+                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 21:
+                    #case 5
+                    if(90 < angle < 180 and 150 < arena_angle < 225):
+                        print('here 3')
                         self.reward += 2000
+
+                    # # enemy in fourth and third quadrant and robot in the left and right side of the arena
+                    # elif (angle < 315 and arena_angle < 45) or (180 < angle < 225 and 135 < arena_angle < 180):
+                    #     self.reward += 2000
                         
-                    # enemy on the first and second quadrant with respect to robot and robot at the bottom of the arena
-                    elif (angle < 45 and 45 < arena_angle < 135) or (135 < angle < 180 and 45 < arena_angle < 135):
-                        self.reward += 1000
+                    # # enemy on the first and second quadrant with respect to robot and robot at the bottom of the arena
+                    # elif (angle < 45 and 45 < arena_angle < 135) or (135 < angle < 180 and 45 < arena_angle < 135):
+                    #     self.reward += 1000
                         
-                    # robot at the top of the arena
-                    elif (arena_angle < 180):
-                        self.reward -= 5000
+                    # # robot at the top of the arena
+                    # elif (arena_angle < 180):
+                    #     self.reward -= 5000
                 # case of not being close to the arena
                 else:
                     #enemy below the robot
                     if(180 < angle):
-                        self.reward += 1000
-                        
+                        print("here 32")
+                        self.reward += 1000               
                     #enemy on top of the robot
                     else:
                         self.reward -= 1000
             #just close to the edge
-            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:  
+            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 23:
                 #robot at the bottom of the arena
-                if (arena_angle < 45 or 135 < angle < 180):
+                if (225 < arena_angle < 315):
                     self.reward += 1000
                     
-                elif (arena_angle < 180):
-                    self.reward -= 2000
-                    
-            payload_dict = {"move": str(3)}
-            payload_json = json.dumps(payload_dict)
-            self.client.publish(robot_topic, payload=payload_json, qos = 0, retain=False) # comes in the action command
+                # elif (arena_angle < 180):
+                #     self.reward -= 2000             
+            self.move_publish(3)
             
                 
          # 4 move down
         elif action == 4:
-            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 10:
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 30 :
                 # close to the edge of the arena
-                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:
-                    # enemy on the left and right of the robot and robot at the top of the arena
-                    if (180 < angle < 225 and 225 < arena_angle < 270) or (angle < 315 and 270 < arena_angle < 315):
+                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 21:
+                    #case 2
+                    if (90 < angle < 180 and 0 < arena_angle < 110):
+                        print('here 2')
                         self.reward += 2000
+
+                    # # enemy on the left and right of the robot and robot at the top of the arena
+                    # elif (180 < angle < 225 and 225 < arena_angle < 270) or (angle < 315 and 270 < arena_angle < 315):
+                    #     self.reward += 2000
                         
-                    # enemy on the right and left of the robot and the robot on the left and right of the arena
-                    elif (45 < angle < 90 and arena_angle < 315) or (90 < angle < 135 and 180 < arena_angle < 225):
-                        self.reward += 1000
+                    # # enemy on the right and left of the robot and the robot on the left and right of the arena
+                    # elif (45 < angle < 90 and arena_angle < 315) or (90 < angle < 135 and 180 < arena_angle < 225):
+                    #     self.reward += 1000
                         
-                    # robot at the bottom of the arena
-                    elif (45 < arena_angle < 135):
-                        self.reward -= 5000
-                        
+                    # # robot at the bottom of the arena
+                    # elif (45 < arena_angle < 135):
+                    #     self.reward -= 5000
                 # case of not being close to the arena
                 else:
                     if(45 < angle < 135):
+                        print("here 42")
                         self.reward += 1000
                         
-                    elif(angle < 180):
-                        self.reward -=2000
+                    # elif(angle < 180):
+                    #     self.reward -=2000
             #just close to the edge
-            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:   
+            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 23:
                 # robot at the top of the arena
-                if (225 < arena_angle < 315):
+                if (45 < arena_angle < 135):
                     self.reward += 1000
-                # robot at the bottom of the arena
-                elif (45 < arena_angle < 135):
-                    self.reward -= 2000
-                    
-            payload_dict = {"move": str(4)}
-            payload_json = json.dumps(payload_dict)
-            self.client.publish(robot_topic, payload=payload_json, qos = 0, retain=False) # comes in the action command
+                # # robot at the bottom of the arena
+                # elif (225 < arena_angle < 315):
+                #     self.reward -= 2000            
+            self.move_publish(4)
             
         
         elif action == 5:
-            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 10: 
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 30 :
                 # close to the edge of the arena
-                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:
-                    if (90 < angle < 135 and 90 < arena_angle < 135) or ( angle > 270 and arena_angle > 315):
+                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 21:
+                    #case 6
+                    if(180 < angle < 270 and 135 < arena_angle < 210):
+                        print("here 5")
                         self.reward += 2000
+
+                    # elif (90 < angle < 135 and 90 < arena_angle < 135) or ( angle > 270 and arena_angle > 315):
+                    #     self.reward += 2000
                         
-                    elif (angle > 315 and arena_agle < 45) or (90 < angle < 180 and 45 < arena_angle < 90):
-                        self.reward += 2000
+                    # elif (angle > 315 and arena_angle < 45) or (90 < angle < 180 and 45 < arena_angle < 90):
+                    #     self.reward += 2000
                         
-                    elif (135 < arena_angle < 315):
-                        self.reward -= 5000
+                    # elif (135 < arena_angle < 315):
+                    #     self.reward -= 5000
                 else: 
                     if(135 < angle < 315):
-                        self.reward += 1000
-                        
+                        print("here 52")
+                        self.reward += 1000    
                     else: 
                         self.reward -= 2000
-            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:   
-                if (135 < arena_angle < 315):
-                    self.reward -= 5000
-                    
-                else:
+            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 23:
+                if (135 < arena_angle < 180):
                     self.reward +=2000
-            payload_dict = {"move": str(5)}
-            payload_json = json.dumps(payload_dict)
-            self.client.publish(robot_topic, payload=payload_json, qos = 0, retain=False) # comes in the action command
+                else:
+                    self.reward -= 5000
+            self.move_publish(5)
             
                 
 
         elif action == 6:
-            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 10: 
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 30 :
                 # close to the edge of the arena
-                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:
-                    if((angle < 45 or angle > 315) and 45 < arena_angle < 90) or (225 < angle < 270 and 225 < arena_angle < 270):
+                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 21:
+                    #case 9
+                    if(180 < angle < 270 and arena_angle > 250):
+                        print("here 6")
                         self.reward += 2000
+
+                    # elif((angle < 45 or angle > 315) and 45 < arena_angle < 90) or (225 < angle < 270 and 225 < arena_angle < 270):
+                    #     self.reward += 2000
                         
-                    elif (180 < angle < 270 and 135 < arena_angle < 180) or (angle < 90 and 90 < arena_angle < 135):
-                        self.reward += 2000
+                    # elif (180 < angle < 270 and 135 < arena_angle < 180) or (angle < 90 and 90 < arena_angle < 135):
+                    #     self.reward += 2000
                         
-                    elif (arena_angle < 45 or arena_angle < 225):
-                        self.reward -= 5000
+                    # elif (arena_angle < 45 or arena_angle < 225):
+                    #     self.reward -= 5000
                 else:
                     if(angle < 45 or angle > 225):
                         self.reward += 1000
-                        
                     else:
                         self.reward -= 1000
-            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:   
-                if (45 < arena_angle < 225):
+            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 23:
+                if (315 < arena_angle < 360):
                     self.reward +=1000
-                    
                 else:
                     self.reward -= 1000        
-            payload_dict = {"move": str(6)}
-            payload_json = json.dumps(payload_dict)
-            self.client.publish(robot_topic, payload=payload_json, qos = 0, retain=False) # comes in the action command
+            self.move_publish(6)
             
 
         elif action == 7:
-            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 10: 
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 30 :
                 # close to the edge of the arena
-                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:
-                    if(45 < angle < 90 and arena_angle < 45) or (90 < angle < 180 and 225 < arena_angle < 270):
-                        self.reward += 2000
+                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 21:
+                    #case 8
+                    if(270 < angle < 360 and 180 < arena_angle < 290):
+                        print("here 7")
+                        move_publish(7)
+                    # elif(45 < angle < 90 and arena_angle < 45) or (90 < angle < 180 and 225 < arena_angle < 270):
+                    #     self.reward += 2000
                         
-                    elif(180 < angle < 270 and 270 < arena_angle < 315) or (angle < 90 and arena_angle > 315):
-                        self.reward += 2000
+                    # elif(180 < angle < 270 and 270 < arena_angle < 315) or (angle < 90 and arena_angle > 315):
+                    #     self.reward += 2000
                         
-                    elif (45 < arena_angle < 225):
-                        self.reward -= 5000
+                    # elif (45 < arena_angle < 225):
+                    #     self.reward -= 5000
                 else:
                     if(45 < angle < 225):
                         self.reward += 1000
-                        
                     else:
                         self.reward -= 1000
-            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:   
-                if(45 < arena_angle < 225):
+            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 23:
+                if(180 < arena_angle < 225):
                     self.reward -= 2000
-                    
                 else:
                     self.reward += 2000
-            payload_dict = {"move": str(7)}
-            payload_json = json.dumps(payload_dict)
-            self.client.publish(robot_topic, payload=payload_json, qos = 0, retain=False) # comes in the action command
+            self.move_publish(7)
             
 
         elif action == 8:
-            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 10: 
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 30 :
                 # close to the edge of the arena
-                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:
-                    if((angle < 45 or angle > 315) and 270 < arena_angle < 315) or (90 < angle < 180 and 135 < arena_angle < 180):
-                        self.reward += 2000
+                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 21:
+                    #case 11
+                    if(270 < angle < 360 and (arena_angle < 90 or arena_angle > 340)):
+                        print("here 8")
+                    # elif((angle < 45 or angle > 315) and 270 < arena_angle < 315) or (90 < angle < 180 and 135 < arena_angle < 180):
+                    #     self.reward += 2000
                         
-                    elif (angle < 270 and 225 < arena_angle < 270) or (90 < angle < 180 and 180 < arena_angle < 225):
-                        self.reward += 2000
+                    # elif (angle < 270 and 225 < arena_angle < 270) or (90 < angle < 180 and 180 < arena_angle < 225):
+                    #     self.reward += 2000
                         
-                    elif (arena_anlge > 315 or arena_angle < 135):
-                        self.reward -= 5000
+                    # elif (arena_angle > 315 or arena_angle < 135):
+                    #     self.reward -= 5000
                 else:
                     if(angle > 315 or angle < 135):
+                        print("here 82")
                         self.reward += 2000
-                        
                     else:
                         self.reward -= 2000
-            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 32:   
-                if(135 < arena_angle < 315):
+            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 23:
+                if(0 < arena_angle < 45):
                     self.reward += 1000
                     
                 else:
                     self.reward -= 1000
-            payload_dict = {"move": str(8)}
-            payload_json = json.dumps(payload_dict)
-            self.client.publish(robot_topic, payload=payload_json, qos = 0, retain=False) # comes in the action command
+            self.move_publish(8)
             
 
         # all the  statements will come to this part
