@@ -1,3 +1,7 @@
+########
+# if enemy outside, stop the thing, reset
+# sumobot should reset it's position to be trained from the said points
+########
 from CV.rpi.hardCode import move_publish
 import math
 from math import sqrt
