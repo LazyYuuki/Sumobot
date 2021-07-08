@@ -17,7 +17,8 @@ unsigned long timer = 0;
 unsigned long timer2 = 0;
 WiFiClient espClient;
 PubSubClient client(espClient);
-float angle = 0;
+double raw_angle = 0;
+double angle = 0;
 
 StaticJsonDocument<60> jsonBuffer;
 
@@ -58,6 +59,19 @@ void setup() {
   Serial.println("Done!\n");
 }
 
+double process_angle(double angle){
+  if (angle > 180){
+    while(angle > 180){
+      angle -= 360;
+    }
+  } else if (angle < -180){
+    while(angle < -180){
+      angle += 360;
+    }
+  }
+  return angle;
+}
+
 void loop() {
     if (!client.connected()) {
     connectWifi();
@@ -65,7 +79,8 @@ void loop() {
   client.loop();
    mpu.update();
   if((millis()-timer)>10){ // print data every 10ms
-  angle = mpu.getAngleZ();
+  raw_angle = mpu.getAngleZ();
+  angle = process_angle(raw_angle);
   Serial.print("\tZ : ");
   Serial.println(angle);
   if((angle > 10 || angle < -10) && (millis()-timer2)>500){
