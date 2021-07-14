@@ -14,6 +14,7 @@ class Sumobot():
         self.reward = 0
         self.enemy_reward = 0
         self.hit, self.miss = 0, 0
+        self.episode_coords = [0,0]
         
         t.clearscreen()
         t.pu()
@@ -189,8 +190,7 @@ class Sumobot():
         # Enemy and Arena collision
 
         if sqrt(pow(self.enemy.xcor(), 2) + pow(self.enemy.ycor(), 2)) > 340:
-            self.enemy.goto(0, 200)
-            self.sumobot.goto(0, -380)
+            self.reset(self.episode_coords)
             self.miss += 1
             self.score.clear()
             self.score.write("Hit: {}   Missed: {}".format(self.hit, self.miss), align='center', font=('Courier', 24, 'normal'))
@@ -202,8 +202,7 @@ class Sumobot():
         # Sumobot Arena contact
 
         if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 382:
-            self.sumobot.goto(0, -380)
-            self.enemy.goto(0, 200)
+            self.reset(self.episode_coords)
             self.miss += 1
             self.score.clear()
             self.score.write("Hit: {}   Missed: {}".format(self.hit, self.miss), align='center', font=('Courier', 24, 'normal'))
@@ -248,11 +247,10 @@ class Sumobot():
     # 7 bottom right
     # 8 bottom left
 
-    def reset(self):
-
-        self.sumobot.goto(0, -380)
-        self.enemy.goto(0, 200)
-#         self.sumobot.right(100)
+    def reset(self, episode_coords):
+        self.episode_coords = episode_coords
+        self.sumobot.goto(episode_coords[0][0], episode_coords[0][1])
+        self.enemy.goto(episode_coords[1][0], episode_coords[1][1])
         return [self.sumobot.xcor(), self.sumobot.ycor(), self.enemy.xcor(), self.enemy.ycor()] # maybe add enemy coordinates too
 
 #     def reset_enemy(self):
@@ -275,7 +273,7 @@ class Sumobot():
 #             else:
 #                 self.reward -= 100
 
-        if action == 1:
+        elif action == 1:
             #close to the enemy
             if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80:
                 # close to the edge of the arena
@@ -312,7 +310,7 @@ class Sumobot():
             self.reward += 60
             self.sumobot_left()
                           
-        if action == 2:
+        elif action == 2:
             #close to the enemy
             if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80:
                 # close to the edge of the arena
@@ -349,7 +347,7 @@ class Sumobot():
             self.reward += 60
             self.sumobot_right()
             
-        if action == 3:
+        elif action == 3:
             if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80:
                 # close to the edge of the arena
                 if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
@@ -382,7 +380,7 @@ class Sumobot():
             self.sumobot_up()
                 
             
-        if action == 4:
+        elif action == 4:
             if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80:
                 # close to the edge of the arena
                 if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
@@ -414,7 +412,7 @@ class Sumobot():
             self.sumobot_down()
                 
             
-        if action == 5:
+        elif action == 5:
             if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80: 
                 # close to the edge of the arena
                 if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
@@ -439,7 +437,7 @@ class Sumobot():
             self.sumobot_top_right()
                 
 
-        if action == 6:
+        elif action == 6:
             if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80: 
                 # close to the edge of the arena
                 if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
@@ -463,7 +461,7 @@ class Sumobot():
                 self.reward += 60
             self.sumobot_top_left()
 
-        if action == 7:
+        elif action == 7:
             if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80: 
                 # close to the edge of the arena
                 if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
@@ -487,7 +485,7 @@ class Sumobot():
                 self.reward += 60
             self.sumobot_bottom_right()
 
-        if action == 8:
+        elif action == 8:
             if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 80: 
                 # close to the edge of the arena
                 if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 350:
