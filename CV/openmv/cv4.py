@@ -17,7 +17,7 @@ clock = time.clock()
 uart = UART(3, 115200, timeout_char=1000)                         # init with given baudrate
 uart.init(115200, bits=8, parity=None, stop=1, timeout_char=1000) # init with given parameters
 
-threshold_index = 5 # 0 for red, 1 for green, 2 for blue, 3 for 3d printed, 4 for cytron box
+threshold_index = 2 # 0 for red, 1 for green, 2 for blue, 3 for 3d printed, 4 for cytron box
 # Color Tracking Thresholds (L Min, L Max, A Min, A Max, B Min, B Max)
 # The below thresholds track in general red/green/blue things. You may wish to tune them...
 thresholds = [(30, 100, 15, 127, 15, 127), # generic_red_thresholds
@@ -44,7 +44,7 @@ while(True):
     clock.tick()
     img = sensor.snapshot()
     img.crop(1,1,(30,0,100,100))
-
+    #img.crop(1,1,(60,0,200,200))
     ours_x1, ours_y1, ours_x2, ours_y2, width, height = find_color_blob() # , sumo_cx, sumo_cy
     center_x = int((math.fabs(ours_x2 - ours_x1) / 2) + ours_x1)
     center_y = int((math.fabs(ours_y2 - ours_y1) / 2) + ours_y1)
@@ -71,6 +71,7 @@ while(True):
     enemy_cy =0
     num_of_seg = 0
     ### detect enemy robot
+<<<<<<< Updated upstream
     for l in img.find_line_segments(merge_distance = 2, max_theta_diff = 5):
         x1, y1, x2, y2 = l.line()
         if math.sqrt(math.pow(x1-center_x, 2) + math.pow(y1-center_y, 2)) > 13:
@@ -92,6 +93,20 @@ while(True):
             #img.draw_rectangle(r.rect(), color = (255, 0, 0))
             #enemy_cx = enemy_x + e_width/2
             #enemy_cy = enemy_y + e_height/2
+=======
+    #for l in img.find_line_segments(merge_distance = 2, max_theta_diff = 5):
+        #x1, y1, x2, y2 = l.line()
+        #if math.sqrt(math.pow(x1-center_x, 2) + math.pow(y1-center_y, 2)) > 17:
+            #if math.sqrt(math.pow(x1-arena_x, 2) + math.pow(y1-arena_y, 2)) < radius-3:
+                #edge_x1, edge_y1, edge_x2, edge_y2 = x1, y1, x2, y2
+                #img.draw_line(l.line(), color = (255, 0, 0))
+    for r in img.find_rects(threshold = 15000):
+        enemy_x, enemy_y, e_width, e_height = r.rect()
+        if math.sqrt(math.pow(enemy_x-center_x, 2) + math.pow(enemy_y-center_y, 2)) > 16:
+            img.draw_rectangle(r.rect(), color = (255, 0, 0))
+            enemy_cx = enemy_x + e_width/2
+            enemy_cy = enemy_y + e_height/2
+>>>>>>> Stashed changes
     center_x -= arena_x
     center_y -= arena_y
     enemy_cx -= arena_x
