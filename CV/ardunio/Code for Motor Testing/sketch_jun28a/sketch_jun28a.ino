@@ -35,6 +35,7 @@ void rightBackStp(){
 void leftFrontFd(){
   digitalWrite(inLF1, HIGH);
   digitalWrite(inLF2, LOW);
+
 }
 
 void rightFrontFd(){
@@ -200,5 +201,5 @@ void setup(){
 }
 
 void loop(){
-  rightBackFd();
+  moveForwards();
 }
