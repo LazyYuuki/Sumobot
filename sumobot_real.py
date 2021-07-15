@@ -1,3 +1,7 @@
+########
+# if enemy outside, stop the thing, reset
+# sumobot should reset it's position to be trained from the said points
+########
 from CV.rpi.hardCode import move_publish
 import math
 from math import sqrt
@@ -304,7 +308,7 @@ class Sumobot():
                         self.reward += 2000
 
                     # # enemy on the left and right of the robot and robot at the top of the arena
-                    # elif (180 < angle < 225 and 225 < arena_angle < 270) or (angle < 315 and 270 < arena_angle < 315):
+                    # elif (180 < angle < 225 and 225 < arena_angle < 270) or (angle > 315 and 270 < arena_angle < 315):
                     #     self.reward += 2000
                         
                     # # enemy on the right and left of the robot and the robot on the left and right of the arena

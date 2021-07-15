@@ -73,9 +73,6 @@ double process_angle(double angle){
 }
 
 void loop() {
-    if (!client.connected()) {
-    connectWifi();
-  }
   client.loop();
    mpu.update();
   if((millis()-timer)>10){ // print data every 10ms
@@ -83,9 +80,9 @@ void loop() {
   angle = process_angle(raw_angle);
   Serial.print("\tZ : ");
   Serial.println(angle);
-  if((angle > 10 || angle < -10) && (millis()-timer2)>500){
+  if((angle > 20 || angle < -20)){
     Serial.println("will publish");
-    if(angle > 10){
+    if(angle > 20){
       //1 for cw, 2 for anticw
     client.publish("raspberry/imu", "1"); 
     } else {
