@@ -7,7 +7,7 @@
 
 const char* ssid = "RoboWifi";
 const char* password = "73333449";
-const char *serverHostname = "192.168.1.17";
+const char *serverHostname = "192.168.1.3";
 // const IPAddress serverIPAddress(192, 168, 1, 3);
 const char *topic1 = "raspberry/imu";
 const char *topic2 = "raspberry/bot";
@@ -54,7 +54,7 @@ void setup() {
 
   while (!client.connected()) {
     Serial.println("Connecting to MQTT Broker!");
-    if (client.connect("ESP2", mqtt_username, mqtt_password)) {
+    if (client.connect("ESP3", mqtt_username, mqtt_password)) {
       Serial.println("Connected");
     }
 
@@ -73,7 +73,8 @@ void setup() {
 
 void loop() {
   if (!client.connected()) {
-     client.connect("ESP2", mqtt_username, mqtt_password);
+     client.connect("ESP3", mqtt_username, mqtt_password);
+     Serial.println("Connecting to MQTT client");
    }
 
   currentMillis = millis();  //get the current "time" (actually the number of milliseconds since the program started)
