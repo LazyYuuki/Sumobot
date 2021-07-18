@@ -23,9 +23,9 @@ import time
     # maybe the number of steps can be halved, because that's when it was positioned well. 
     
 # V3:
-    # V1 with epislon_decay at 0.997
+    # 2 episodes
 # V4:
-    # V2 with epsilon_decay at 0.997
+    # 90 degree more points
     
     
 class Sumobot():
@@ -133,11 +133,11 @@ class Sumobot():
             
         # Sumobot Arena contact
 
-        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 37:
+        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 35:
             # so these two "goto"s should take the values of the particular case we are in
             self.sumobot.goto(self.state[0], self.state[1])
-            self.reward -= 10000
-#             self.done = True # maybe remove this, for one of the training
+            self.reward -= 20000
+            self.done = True # maybe remove this, for one of the training
         else:
             self.reward += 1000
             
@@ -147,7 +147,7 @@ class Sumobot():
         elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10:
             self.reward -= 2000
         else:
-            self.reward += 100
+            self.reward += 3000
             
         # Enemy Sumobot collision
 
