@@ -19,7 +19,7 @@ while True:
     to_move = input("What to do\n")
     client.on_connect = on_connect
     client.connect("raspberrypi", 1883, 60)
-    payload_dict = {"cw": True, "move": to_move}
+    payload_dict = {"cw": True, "move": int(to_move)}
     payload_json = json.dumps(payload_dict)
     print(movement[payload_dict["move"]])
     client.publish('raspberry/bot', payload=payload_json, qos = 0, retain=False)

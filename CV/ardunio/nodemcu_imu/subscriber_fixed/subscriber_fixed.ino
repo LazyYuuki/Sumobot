@@ -7,9 +7,9 @@
 
 const char* ssid = "RoboWifi";
 const char* password = "73333449";
-const char *serverHostname = "192.168.1.17";
+const char *serverHostname = "192.168.1.3";
 // const IPAddress serverIPAddress(192, 168, 1, 3);
-const char *topic = "raspberry/bot";
+const char *topic = "raspberry/imu";
 const char* mqtt_username = "sumobot";
 const char* mqtt_password = "sumobot";
 MPU6050 mpu(Wire);
@@ -84,12 +84,15 @@ void loop() {
     Serial.println("will publish");
     if(angle > 20){
       //1 for cw, 2 for anticw
-    client.publish("raspberry/imu", "1"); 
+      client.publish("raspberry/imu", "1"); 
     } else {
       client.publish("raspberry/imu", "2"); 
     }
     timer2 = millis();
     }
+   else {
+    client.publish("raspberry/imu", "0"); 
+   }
    timer = millis(); 
   }
 }
