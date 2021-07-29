@@ -7,7 +7,7 @@
 
 const char* ssid = "RoboWifi";
 const char* password = "73333449";
-const char *serverHostname = "192.168.1.3";
+const char *serverHostname = "192.168.1.23";
 // const IPAddress serverIPAddress(192, 168, 1, 3);
 const char *topic1 = "raspberry/imu";
 const char *topic2 = "raspberry/bot";
@@ -16,7 +16,6 @@ const char* mqtt_password = "sumobot";
 unsigned long startMillis;  //some global variables available anywhere in the program
 unsigned long currentMillis;
 const unsigned long period = 100;  //the value is a number of milliseconds
-int corrected = 1;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -137,22 +136,16 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
   if(myString[0] == '1'){
     Serial.println("Turn anticlockwise");
     turnAntiClockwise();
-    corrected = 0;
   } else if (myString[0] == '2') {
     Serial.println("Turn clockwise");
     turnClockwise();
-    corrected = 0;
-  } else if(myString[0] == '0')  {
-    if(corrected == 0){
+  } else {
     allStop();
-    }
-    corrected = 1;
   }
   }
 
   else if (strcmp(msgTopic,topic2)==0) {
     Serial.println("Topic BOT");
-    if(corrected == 1){
      static char message[MAX_MSG_LEN + 1];
   if (msgLength > MAX_MSG_LEN) {
     msgLength = MAX_MSG_LEN;
@@ -229,7 +222,6 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
       break;
   }
 
-  }
   }
 
 
