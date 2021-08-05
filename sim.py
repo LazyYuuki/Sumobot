@@ -22,7 +22,7 @@ class Sumobot():
         self.angle = 0
         self.angle_delta = 30        
         self.arena_radius = 44
-        self.speed = 3
+        self.speed = 1
 
         
         t.clearscreen()
@@ -40,9 +40,9 @@ class Sumobot():
         self.sumobot.shapesize(stretch_wid=0.2, stretch_len=0.2)
         self.sumobot.color('blue')
         self.sumobot.pu()
-        self.sumobot.goto(random.randint(-30,30), random.randint(-30,30))
-        self.sumobot.dx = 0
-        self.sumobot.dy = 0
+        self.x = math.sqrt((36**2)/(1 + (math.tan(math.radians(0)))**2))
+        self.y = self.x * math.tan(math.radians(0))
+        self.sumobot.goto(-self.x,-self.y)
         
         # Enemy
         self.enemy = t.Turtle()
@@ -51,9 +51,6 @@ class Sumobot():
         self.enemy.shape('square')
         self.enemy.color('red')
         self.enemy.pu()
-        self.enemy.goto(random.randint(-30,30), random.randint(-30,30))
-        self.enemy.dx = 0
-        self.enemy.dy = 0
         #self.enemy.shapesize(stretch_wid=4, stretch_len=4)
 
 
@@ -124,42 +121,6 @@ class Sumobot():
         elif 270 < angle < 360:
             self.sumobot.goto(-x,-y)
         #self.red_dot()
-   
-    def run_frame(self):
-    
-        angle = math.radians(self.enemy.towards(self.sumobot.xcor(), self.sumobot.ycor()))
-        distance = math.dist([self.sumobot.xcor(), self.sumobot.ycor()], [self.enemy.xcor(), self.enemy.ycor()])
-        
-        if distance == 0:
-            distance = 1
-        
-        dy = distance * math.sin(angle)
-        dx = distance * math.cos(angle)
-        
-        scale = 1/sqrt(pow(dx,2) + pow(dy,2))
-        
-        self.enemy.dx = dx * scale
-        self.enemy.dy = dy * scale
-        
-        # print(angle, distance, self.enemy.dx, self.enemy.dy)
-        
-        self.enemy.setx(self.enemy.xcor() + self.enemy.dx)
-        self.enemy.sety(self.enemy.ycor() + self.enemy.dy)
-            
-        # Sumobot Arena contact
-        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 37:
-            # so these two "goto"s should take the values of the particular case we are in
-            self.reward -= 9
-        else:
-            if sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 17:
-                # so these two "goto"s should take the values of the particular case we are in
-                self.reward -= 3
-            else:
-                self.reward += 1
-            
-        # stay as far as possible from enemy    
-        # if  sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 20:
-        #    self.reward -= 100
             
     def reset(self, episode_coords):
         # so these two "goto"s should take the values of the particular case we are in
@@ -183,47 +144,42 @@ class Sumobot():
         # 1 move left
         elif action == 1:
             self.sumobot_left()
-            self.reward -= 0.1
         
         # 2 move right   
         elif action == 2:
             self.sumobot_right()
-            self.reward -= 0.1
   
         # 3 move up  
         elif action == 3:
             self.sumobot_up()
-            self.reward -= 0.1
             
          # 4 move down
         elif action == 4:
             self.sumobot_down()
-            self.reward -= 0.1
             
         # move top right   
         elif action == 6:     
             self.sumobot_top_right()
-            self.reward -= 0.1
             
         # move top left
         elif action == 7:
             self.sumobot_top_left()
-            self.reward -= 0.1
             
         # move bottom right    
         elif action == 8:   
             self.sumobot_bottom_right()
-            self.reward -= 0.1
             
         # move bottom left
         elif action == 5:
-            self.sumobot_bottom_left()
-            self.reward -= 0.1            
-
-        self.sumobot.setx(self.sumobot.xcor() + self.sumobot.dx)
-        self.sumobot.sety(self.sumobot.ycor() + self.sumobot.dy)
+            self.sumobot_bottom_left()            
         
-        self.run_frame()
+        
+        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 37 or sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 17:
+            # so these two "goto"s should take the values of the particular case we are in
+            self.reward = -1
+        else:
+            self.reward = 1
+            
         
         state = [self.sumobot.xcor(), self.sumobot.ycor(), self.enemy.xcor(), self.enemy.ycor()] # 4
         return self.reward, state, self.done
