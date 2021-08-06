@@ -151,7 +151,7 @@ class Sumobot():
             # so these two "goto"s should take the values of the particular case we are in
             self.reward -= 9
         else:
-            if sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 17:
+            if sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 22:
                 # so these two "goto"s should take the values of the particular case we are in
                 self.reward -= 3
             else:
@@ -176,7 +176,7 @@ class Sumobot():
         #need to transform the arena angle
         arena_angle = self.sumobot.towards(0, 0)
         
-        self.speed = random.randint(1, 3)
+        self.speed = random.randint(3, 6)
         
         # 0 do nothing
         if action == 0:
@@ -185,42 +185,42 @@ class Sumobot():
         # 1 move left
         elif action == 1:
             self.sumobot_left()
-            self.reward -= 0.1
+            self.reward -= 0.2
         
         # 2 move right   
         elif action == 2:
             self.sumobot_right()
-            self.reward -= 0.1
+            self.reward -= 0.2
   
         # 3 move up  
         elif action == 3:
             self.sumobot_up()
-            self.reward -= 0.1
+            self.reward -= 0.2
             
          # 4 move down
         elif action == 4:
             self.sumobot_down()
-            self.reward -= 0.1
+            self.reward -= 0.2
             
         # move top right   
-        elif action == 6:     
+        elif action == 5:     
             self.sumobot_top_right()
-            self.reward -= 0.1
+            self.reward -= 0.2
             
         # move top left
-        elif action == 7:
+        elif action == 6:
             self.sumobot_top_left()
-            self.reward -= 0.1
+            self.reward -= 0.2
             
         # move bottom right    
-        elif action == 8:   
+        elif action == 7:   
             self.sumobot_bottom_right()
-            self.reward -= 0.1
+            self.reward -= 0.2
             
         # move bottom left
-        elif action == 5:
+        elif action == 8:
             self.sumobot_bottom_left()
-            self.reward -= 0.1            
+            self.reward -= 0.2            
 
         self.sumobot.setx(self.sumobot.xcor() + self.sumobot.dx)
         self.sumobot.sety(self.sumobot.ycor() + self.sumobot.dy)

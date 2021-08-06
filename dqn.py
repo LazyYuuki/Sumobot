@@ -117,7 +117,7 @@ def train_dqn(episode):
                 
         loss.append(score) 
     #save both models
-    agent.model.save('modelnew12.h5')
+    agent.model.save('final.h5')
     return loss
 
 

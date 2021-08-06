@@ -1,11 +1,11 @@
 import turtle as t
 import math
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 import numpy as np
 import time
 
 #load model
-model = load_model('modelnew11.h5')
+model = load_model('modelnew13.h5')
 
 
 win = t.Screen()    # Create a screen
@@ -108,7 +108,7 @@ while True:
 
     new_list = [sumobot.xcor(), sumobot.ycor(), enemy.xcor(), enemy.ycor()]
     X = np.reshape(new_list, (1, 4))
-    pred = model(X)
+    pred = model.predict(X)
     move = int(np.argmax(pred[0]))
     if (move == 0):
         sumo_stop()
