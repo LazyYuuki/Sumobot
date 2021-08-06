@@ -7,7 +7,7 @@
 
 const char* ssid = "RoboWifi";
 const char* password = "73333449";
-const char *serverHostname = "192.168.1.3";
+const char *serverHostname = "192.168.1.23";
 // const IPAddress serverIPAddress(192, 168, 1, 3);
 const char *topic = "raspberry/imu";
 const char* mqtt_username = "sumobot";

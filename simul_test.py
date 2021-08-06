@@ -1,47 +1,30 @@
 import turtle as t
 import math
+from math import sqrt
 import random
 import numpy as np
 import cmath
-from math import sqrt
 import time
 
 
-## things to do
+##
+# do the axis match? since, we train it beased on testing, i think they do?
+# looks like arena angle is shited by 180 deg and it's direction of rotation flipped
 # "angle" between enemy and sumobot, seems to take as with respect to enemy as center 
-# tune the algorithm eg: radius and conditions, distances, what not
-# rename the model types
 
-# observation
-# V1:
-    # the sumobot hovers too close to the enemy, only for some cases, but it still shouldn't happen
-    # a lot of zeroes when both are close to the center and to each other
-# V2: 
-    # also hovers close to the enemy for some reason
-    # this is not good because it doesn't learn punishment for leaving the arena
-    # staying at the edge too long. Is it overfitting
-    # maybe the number of steps can be halved, because that's when it was positioned well. 
-    
-# V3:
-    # 2 episodes
-# V4:
-    # 90 degree more points
-    
-    
 class Sumobot():
 
     def __init__(self):
-        self.done = False # every time this value is True, the training moves to a new episode
-        self.reward = 0 
-        self.radius = -36  # initial sumbot starting point
-        self.radius_delta = 10 # radius movement
-        self.angle = 0 # angle with respect to the center of arena
-        self.angle_delta = 30  # moving across the arena
-        self.arena_radius = 44 # the playing area 
-        self.speed = 2 # how fast the sumobot will move
-        self.state = [0, 0, 0, 0] # will be the universal reset for each individual episode
+        self.done = False
+        self.reward = 0
+        self.radius = -36
+        self.radius_delta = 8
+        self.angle = 0
+        self.angle_delta = 30        
+        self.arena_radius = 44
+        self.speed = 0
+
         
-        # arena buildup
         t.clearscreen()
         t.pu()
         t.setpos(-self.arena_radius,0)
@@ -57,11 +40,9 @@ class Sumobot():
         self.sumobot.shapesize(stretch_wid=0.2, stretch_len=0.2)
         self.sumobot.color('blue')
         self.sumobot.pu()
-        self.x = math.sqrt((36**2)/(1 + (math.tan(math.radians(0)))**2))
-        self.y = self.x * math.tan(math.radians(0))
+        self.sumobot.goto(random.randint(-30,30), random.randint(-30,30))
         self.sumobot.dx = 0
         self.sumobot.dy = 0
-#         self.sumobot.goto(-self.x,-self.y)
         
         # Enemy
         self.enemy = t.Turtle()
@@ -70,6 +51,9 @@ class Sumobot():
         self.enemy.shape('square')
         self.enemy.color('red')
         self.enemy.pu()
+        self.enemy.goto(random.randint(-30,30), random.randint(-30,30))
+        self.enemy.dx = 0
+        self.enemy.dy = 0
         #self.enemy.shapesize(stretch_wid=4, stretch_len=4)
 
 
@@ -115,33 +99,75 @@ class Sumobot():
     def sumobot_bottom_left(self):
         self.sumobot.dx = -self.speed
         self.sumobot.dy = -self.speed
-        
-    
-    def run_frame(self):
-        
-        # Sumobot moving
-        # this code is important as this is what updates the position of the bot, aka making it move
-        self.sumobot.setx(self.sumobot.xcor() + self.sumobot.dx)
-        self.sumobot.sety(self.sumobot.ycor() + self.sumobot.dy)
-        
-        # Enemy and Arena collision
 
-        if sqrt(pow(self.enemy.xcor(), 2) + pow(self.enemy.ycor(), 2)) > self.arena_radius:
-            # so these two "goto"s should take the values of the particular case we are in
-            self.sumobot.goto(self.state[0], self.state[1])
-            self.done = True
+        
+
+    def red_dot(self):
+        t.pd()
+        t.dot('red')
+        t.pu()
+        
+    def blue_dot(self):
+        t.pd()
+        t.dot('blue')
+        t.pu()
+        
+    def sumobot_spiral(self, angle, radius):
+        x = math.sqrt((radius**2)/(1 + (math.tan(math.radians(angle)))**2))
+        y = x * math.tan(math.radians(angle))
+        if 0 <= angle <= 90:
+            self.sumobot.goto(-x,-y)
+        elif 90 < angle <= 180:
+            self.sumobot.goto(x,y)
+        elif 180 < angle <= 270:
+            self.sumobot.goto(x,y)
+        elif 270 < angle < 360:
+            self.sumobot.goto(-x,-y)
+        #self.red_dot()
+   
+    def run_frame(self):
+    
+        angle = math.radians(self.enemy.towards(self.sumobot.xcor(), self.sumobot.ycor()))
+        distance = math.dist([self.sumobot.xcor(), self.sumobot.ycor()], [self.enemy.xcor(), self.enemy.ycor()])
+        
+        if distance == 0:
+            distance = 1
+        
+        dy = distance * math.sin(angle)
+        dx = distance * math.cos(angle)
+        
+        scale = (random.randint(1, 3))/sqrt(pow(dx,2) + pow(dy,2))
+        
+        self.enemy.dx = dx * scale
+        self.enemy.dy = dy * scale
+        
+        # print(angle, distance, self.enemy.dx, self.enemy.dy)
+        
+        self.enemy.setx(self.enemy.xcor() + self.enemy.dx)
+        self.enemy.sety(self.enemy.ycor() + self.enemy.dy)
             
         # Sumobot Arena contact
+<<<<<<< HEAD
 
         if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 36:
             # so these two "goto"s should take the values of the particular case we are in
             self.sumobot.goto(self.state[0], self.state[1])
             self.reward -= 8000
             self.done = False # maybe remove this, for one of the training
+=======
+        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 37:
+            # so these two "goto"s should take the values of the particular case we are in
+            self.reward -= 9
+>>>>>>> 0c377e566e5704fafecc702565e7e24e8f12c784
         else:
-            self.reward += 1000
+            if sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 17:
+                # so these two "goto"s should take the values of the particular case we are in
+                self.reward -= 3
+            else:
+                self.reward += 3
             
         # stay as far as possible from enemy    
+<<<<<<< HEAD
         if sqrt(pow((self.enemy.xcor()-self.sumobot.xcor()), 2) + pow((self.enemy.ycor()-self.sumobot.ycor()), 2)) > 45:
             self.reward += 1500
         elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10:
@@ -153,14 +179,17 @@ class Sumobot():
 
         if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 6:
             self.reward -= 1000
+=======
+        # if  sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 20:
+        #    self.reward -= 100
+>>>>>>> 0c377e566e5704fafecc702565e7e24e8f12c784
             
     def reset(self, episode_coords):
         # so these two "goto"s should take the values of the particular case we are in
         # so i think they'll go inside the giant for loop
         self.sumobot.goto(episode_coords[0][0], episode_coords[0][1])
         self.enemy.goto(episode_coords[1][0], episode_coords[1][1])
-        self.state = [self.sumobot.xcor(), self.sumobot.ycor(), self.enemy.xcor(), self.enemy.ycor()]
-        return [self.sumobot.xcor(), self.sumobot.ycor(), self.enemy.xcor(), self.enemy.ycor()] 
+        return [self.sumobot.xcor(), self.sumobot.ycor(), self.enemy.xcor(), self.enemy.ycor()] # maybe add enemy coordinates too
         
         
     def step(self, action):
@@ -168,19 +197,24 @@ class Sumobot():
         self.done = 0
         angle = self.enemy.towards(self.sumobot.xcor(), self.sumobot.ycor())
         #need to transform the arena angle
-        arena_angle = 360 - self.sumobot.towards(0, 0) 
-        state = [self.sumobot.xcor(), self.sumobot.ycor(), self.enemy.xcor(), self.enemy.ycor()]
+        arena_angle = self.sumobot.towards(0, 0)
+        
+        self.speed = random.randint(1, 3)
         
         # 0 do nothing
         if action == 0:
+<<<<<<< HEAD
             if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) > 34:
                 self.reward += 1000
             else:
                 self.reward -= 1000
+=======
+>>>>>>> 0c377e566e5704fafecc702565e7e24e8f12c784
             self.sumobot_stop()
         
         # 1 move left
         elif action == 1:
+<<<<<<< HEAD
             #close to the enemy
             if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 20 :
                 # close to the edge of the arena
@@ -211,10 +245,14 @@ class Sumobot():
                 # robot in second and third quadrant edges
                 elif arena_angle < 90 or arena_angle > 270:
                     self.reward -= 7000
+=======
+>>>>>>> 0c377e566e5704fafecc702565e7e24e8f12c784
             self.sumobot_left()
+            self.reward -= 0.1
         
         # 2 move right   
         elif action == 2:
+<<<<<<< HEAD
             # close to the enemy
             if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 18 :
                 # close to the edge of the arena
@@ -242,10 +280,14 @@ class Sumobot():
                 # # robot in right side edges
                 elif 135 < arena_angle < 225:
                     self.reward -= 7000
+=======
+>>>>>>> 0c377e566e5704fafecc702565e7e24e8f12c784
             self.sumobot_right()
+            self.reward -= 0.1
   
         # 3 move up  
         elif action == 3:
+<<<<<<< HEAD
             if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 18 :
                 # close to the edge of the arena
                 if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 33:
@@ -270,10 +312,14 @@ class Sumobot():
                     self.reward += 1000
                 elif (arena_angle < 180):
                     self.reward -= 2000         
+=======
+>>>>>>> 0c377e566e5704fafecc702565e7e24e8f12c784
             self.sumobot_up()
+            self.reward -= 0.1
             
          # 4 move down
         elif action == 4:
+<<<<<<< HEAD
             if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 18 :
                 # close to the edge of the arena
                 if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 33:
@@ -298,10 +344,14 @@ class Sumobot():
                 # robot at the bottom of the arena
                 elif (225 < arena_angle < 315):
                     self.reward -= 2000   
+=======
+>>>>>>> 0c377e566e5704fafecc702565e7e24e8f12c784
             self.sumobot_down()
+            self.reward -= 0.1
             
         # move top right   
         elif action == 6:     
+<<<<<<< HEAD
             if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 18 :
                 # close to the edge of the arena
                 if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 33:
@@ -326,10 +376,14 @@ class Sumobot():
                     self.reward +=2000
                 else:
                     self.reward -= 7000
+=======
+>>>>>>> 0c377e566e5704fafecc702565e7e24e8f12c784
             self.sumobot_top_right()
+            self.reward -= 0.1
             
         # move top left
         elif action == 7:
+<<<<<<< HEAD
             if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 18 :
                 # close to the edge of the arena
                 if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 33:
@@ -354,31 +408,19 @@ class Sumobot():
                     self.reward +=1000
                 else:
                     self.reward -= 1000
+=======
+>>>>>>> 0c377e566e5704fafecc702565e7e24e8f12c784
             self.sumobot_top_left()
-            
+            self.reward -= 0.1
             
         # move bottom right    
         elif action == 8:   
-            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 18 :
-                # close to the edge of the arena
-                if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 33:
-                    #case 8
-                    if(270 < angle < 360 and 180 < arena_angle < 290):
-                        self.reward += 2000
-                else:
-                    if(45 < angle < 225):
-                        self.reward += 1000
-                    else:
-                        self.reward -= 1000
-            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 33:
-                if(180 < arena_angle < 225):
-                    self.reward -= 2000
-                else:
-                    self.reward += 2000
             self.sumobot_bottom_right()
+            self.reward -= 0.1
             
         # move bottom left
         elif action == 5:
+<<<<<<< HEAD
             if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 18 :
                 # close to the edge of the arena
                 if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 33:
@@ -407,6 +449,16 @@ class Sumobot():
             self.sumobot_bottom_left()            
                         
         self.run_frame()            
+=======
+            self.sumobot_bottom_left()
+            self.reward -= 0.1            
+
+        self.sumobot.setx(self.sumobot.xcor() + self.sumobot.dx)
+        self.sumobot.sety(self.sumobot.ycor() + self.sumobot.dy)
+        
+        self.run_frame()
+        
+>>>>>>> 0c377e566e5704fafecc702565e7e24e8f12c784
         state = [self.sumobot.xcor(), self.sumobot.ycor(), self.enemy.xcor(), self.enemy.ycor()] # 4
         return self.reward, state, self.done
 # ------------------------ Human control ------------------------
@@ -415,5 +467,3 @@ class Sumobot():
 
 # while True:
 #      env.run_frame()
-        
-        
