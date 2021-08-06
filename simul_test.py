@@ -133,11 +133,11 @@ class Sumobot():
             
         # Sumobot Arena contact
 
-        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 35:
+        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 36:
             # so these two "goto"s should take the values of the particular case we are in
             self.sumobot.goto(self.state[0], self.state[1])
-            self.reward -= 20000
-            self.done = True # maybe remove this, for one of the training
+            self.reward -= 8000
+            self.done = False # maybe remove this, for one of the training
         else:
             self.reward += 1000
             
@@ -145,7 +145,7 @@ class Sumobot():
         if sqrt(pow((self.enemy.xcor()-self.sumobot.xcor()), 2) + pow((self.enemy.ycor()-self.sumobot.ycor()), 2)) > 45:
             self.reward += 1500
         elif sqrt(pow(self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 10:
-            self.reward -= 2000
+            self.reward -= 5000
         else:
             self.reward += 3000
             
@@ -173,7 +173,7 @@ class Sumobot():
         
         # 0 do nothing
         if action == 0:
-            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) > 45:
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) > 34:
                 self.reward += 1000
             else:
                 self.reward -= 1000
@@ -182,7 +182,7 @@ class Sumobot():
         # 1 move left
         elif action == 1:
             #close to the enemy
-            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 18 :
+            if sqrt(pow((state[2]-state[0]), 2) + pow((state[3]-state[1]), 2)) < 20 :
                 # close to the edge of the arena
                 if sqrt(pow(state[0], 2) + pow(state[1], 2)) > 33:
                     #case 3
@@ -194,7 +194,7 @@ class Sumobot():
                     elif (90 < angle < 135 and 45 < arena_angle < 135) or (225 < angle < 270 and 225 < arena_angle < 315):
                         self.reward -= 1000
                     elif (arena_angle < 90 or arena_angle > 270) and (angle < 90 or angle > 270):
-                        self.reward -= 5000
+                        self.reward -= 7000
                 #case of not being close to the arena
                 else:
                     # enemy in first and fourth quadrants
@@ -204,13 +204,13 @@ class Sumobot():
                     else:
                         self.reward -= 1000
             #just close to the edge
-            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 33:
+            elif sqrt(pow(state[0], 2) + pow(state[1], 2)) > 35:
                 # robot in first and fourth quadrants edges
                 if 135 < arena_angle < 225:
                     self.reward += 4000
                 # robot in second and third quadrant edges
                 elif arena_angle < 90 or arena_angle > 270:
-                    self.reward -= 5000
+                    self.reward -= 7000
             self.sumobot_left()
         
         # 2 move right   
@@ -241,7 +241,7 @@ class Sumobot():
                     self.reward += 4000
                 # # robot in right side edges
                 elif 135 < arena_angle < 225:
-                    self.reward -= 5000
+                    self.reward -= 7000
             self.sumobot_right()
   
         # 3 move up  
@@ -254,7 +254,7 @@ class Sumobot():
                         self.reward += 2000
                      # robot at the top of the arena
                     elif (arena_angle < 180):
-                        self.reward -= 5000
+                        self.reward -= 7000
                 # case of not being close to the arena
                 else:
                     #enemy below the robot
@@ -283,7 +283,7 @@ class Sumobot():
                     elif (angle > 315 and 270 < arena_angle < 315):
                         self.reward += 2000
                     elif (225 < arena_angle < 315):
-                        self.reward -= 5000
+                        self.reward -= 7000
                  # case of not being close to the arena
                 else:
                     if(45 < angle < 135):
@@ -315,7 +315,7 @@ class Sumobot():
                         self.reward += 2000
                         
                     elif (135 < arena_angle < 315):
-                        self.reward -= 5000
+                        self.reward -= 7000
                 else: 
                     if(135 < angle < 315):
                         self.reward += 1000    
@@ -325,7 +325,7 @@ class Sumobot():
                 if (135 < arena_angle < 180):
                     self.reward +=2000
                 else:
-                    self.reward -= 5000
+                    self.reward -= 7000
             self.sumobot_top_right()
             
         # move top left
@@ -343,7 +343,7 @@ class Sumobot():
                         self.reward += 2000
                         
                     elif (arena_angle < 45 or arena_angle < 225):
-                        self.reward -= 5000
+                        self.reward -= 7000
                 else:
                     if(angle < 45 or angle > 225):
                         self.reward += 1000
@@ -392,7 +392,7 @@ class Sumobot():
                         self.reward += 2000
                         
                     elif (arena_angle > 315 or arena_angle < 135):
-                        self.reward -= 5000
+                        self.reward -= 7000
                 else:
                     if(angle > 315 or angle < 135):
                         self.reward += 2000
