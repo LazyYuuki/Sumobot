@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 #load model
-model = load_model('modelV3.h5')
+model = load_model('modelnew11.h5')
 
 
 win = t.Screen()    # Create a screen

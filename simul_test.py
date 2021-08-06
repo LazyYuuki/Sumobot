@@ -22,7 +22,7 @@ class Sumobot():
         self.angle = 0
         self.angle_delta = 30        
         self.arena_radius = 44
-        self.speed = 3
+        self.speed = 0
 
         
         t.clearscreen()
@@ -136,7 +136,7 @@ class Sumobot():
         dy = distance * math.sin(angle)
         dx = distance * math.cos(angle)
         
-        scale = 1/sqrt(pow(dx,2) + pow(dy,2))
+        scale = (random.randint(1, 3))/sqrt(pow(dx,2) + pow(dy,2))
         
         self.enemy.dx = dx * scale
         self.enemy.dy = dy * scale
@@ -155,7 +155,7 @@ class Sumobot():
                 # so these two "goto"s should take the values of the particular case we are in
                 self.reward -= 3
             else:
-                self.reward += 1
+                self.reward += 3
             
         # stay as far as possible from enemy    
         # if  sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 20:
@@ -175,6 +175,8 @@ class Sumobot():
         angle = self.enemy.towards(self.sumobot.xcor(), self.sumobot.ycor())
         #need to transform the arena angle
         arena_angle = self.sumobot.towards(0, 0)
+        
+        self.speed = random.randint(1, 3)
         
         # 0 do nothing
         if action == 0:
