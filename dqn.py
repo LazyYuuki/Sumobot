@@ -117,7 +117,7 @@ def train_dqn(episode):
                 
         loss.append(score) 
     #save both models
-    agent.model.save('modelnew12.h5')
+    agent.model.save('final4.h5')
     return loss
 
 
@@ -125,7 +125,7 @@ if __name__ == '__main__':
 # So when the interpreter runs a module, the __name__ variable will be set as  __main__ if the module that is being run is the main program.
 # But if the code is importing the module from another module, then the __name__  variable will be set to that module’s name.
 # https://www.freecodecamp.org/news/if-name-main-python-example/
-    ep = 600
+    ep = 2000
     loss = train_dqn(ep)
 #     print(loss)
     plt.plot([i for i in range(ep)], loss)
