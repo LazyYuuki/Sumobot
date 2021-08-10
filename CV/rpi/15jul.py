@@ -20,7 +20,7 @@ client.on_connect = on_connect
 client.connect("raspberrypi", 1883, 60)
 
 #load model
-model = load_model('modelV1.h5')
+model = load_model('final4.h5')
 
 while True:
     readedText = ser.readline()

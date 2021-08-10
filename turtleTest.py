@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 #load model
-model = load_model('modelnew13.h5')
+model = load_model('final4.h5')
 
 
 win = t.Screen()    # Create a screen
@@ -36,6 +36,7 @@ enemy.shapesize(stretch_wid=0.2, stretch_len=0.2)
 enemy.shape('square')
 enemy.color('red')
 enemy.pu()
+enemy.goto(0,44)
 #self.enemy.shapesize(stretch_wid=4, stretch_len=4)
 
 # Paddle Movement
