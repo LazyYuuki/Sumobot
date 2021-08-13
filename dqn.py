@@ -88,13 +88,13 @@ def train_dqn(episode):
     #sumobot and enemy action and state space
     action_space = 9
     state_space = 4
-    max_steps = 100
+    max_steps = 200
     #sumobot agent
     agent = DQN(action_space, state_space)
     for e in range(episode):
         print(e)
-        agent.episode_coords[0] = [random.randint(-30,30), random.randint(-30,30)]
-        agent.episode_coords[1] = [random.randint(-30,30), random.randint(-30,30)]
+        agent.episode_coords[0] = [0, 30]
+        agent.episode_coords[1] = [0, -30]
         state = env.reset(agent.episode_coords)
         state = np.reshape(state, (1, state_space))
         score = 0             
@@ -108,16 +108,14 @@ def train_dqn(episode):
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             agent.replay()
-            print("episode: {}/{}, score: {}".format(e, episode, score))
-            agent.model.summary()
-            # if done:
-            #     print("episode: {}/{}, score: {}".format(e, episode, score))
-            #     agent.model.summary()
-            #     break
+            if done:
+                print("episode: {}/{}, score: {}".format(e, episode, score))
+                agent.model.summary()
+                break
                 
         loss.append(score) 
     #save both models
-    agent.model.save('final4.h5')
+    agent.model.save('final8.h5')
     return loss
 
 
@@ -125,7 +123,7 @@ if __name__ == '__main__':
 # So when the interpreter runs a module, the __name__ variable will be set as  __main__ if the module that is being run is the main program.
 # But if the code is importing the module from another module, then the __name__  variable will be set to that module’s name.
 # https://www.freecodecamp.org/news/if-name-main-python-example/
-    ep = 2000
+    ep = 3000
     loss = train_dqn(ep)
 #     print(loss)
     plt.plot([i for i in range(ep)], loss)

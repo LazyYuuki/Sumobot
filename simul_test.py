@@ -40,7 +40,7 @@ class Sumobot():
         self.sumobot.shapesize(stretch_wid=0.2, stretch_len=0.2)
         self.sumobot.color('blue')
         self.sumobot.pu()
-        self.sumobot.goto(random.randint(-30,30), random.randint(-30,30))
+        self.sumobot.goto(0, 30)
         self.sumobot.dx = 0
         self.sumobot.dy = 0
         
@@ -51,7 +51,7 @@ class Sumobot():
         self.enemy.shape('square')
         self.enemy.color('red')
         self.enemy.pu()
-        self.enemy.goto(random.randint(-30,30), random.randint(-30,30))
+        self.enemy.goto(0,-30)
         self.enemy.dx = 0
         self.enemy.dy = 0
         #self.enemy.shapesize(stretch_wid=4, stretch_len=4)
@@ -136,7 +136,7 @@ class Sumobot():
         dy = distance * math.sin(angle)
         dx = distance * math.cos(angle)
         
-        scale = (random.randint(1, 3))/sqrt(pow(dx,2) + pow(dy,2))
+        scale = 1/sqrt(pow(dx,2) + pow(dy,2))
         
         self.enemy.dx = dx * scale
         self.enemy.dy = dy * scale
@@ -147,15 +147,17 @@ class Sumobot():
         self.enemy.sety(self.enemy.ycor() + self.enemy.dy)
             
         # Sumobot Arena contact
-        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 37:
+        if sqrt(pow(self.sumobot.xcor(), 2) + pow(self.sumobot.ycor(), 2)) > 34:
             # so these two "goto"s should take the values of the particular case we are in
-            self.reward -= 9
+            self.reward -= 30
+            self.done = 1
         else:
-            if sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 28:
+            if sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 20:
                 # so these two "goto"s should take the values of the particular case we are in
-                self.reward -= 3
+                self.reward -= 30
+                self.done = 1
             else:
-                self.reward += 3
+                self.reward += 1
             
         # stay as far as possible from enemy    
         # if  sqrt(pow(self.enemy.xcor() - self.sumobot.xcor(), 2) + pow(self.enemy.ycor() - self.sumobot.ycor(), 2)) < 20:
