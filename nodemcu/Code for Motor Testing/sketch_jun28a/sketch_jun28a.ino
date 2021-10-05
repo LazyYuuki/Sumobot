@@ -1,14 +1,17 @@
 // Motor A connections
 //1,2 is for left front, 3,4 is for right front
 //7,8 is for left back, 5,6 is for right back
-int inRF1 = D2;
-int inRF2 = D3;
-int inLF1 = D0;
-int inLF2 = D1;
-int inRB1 = D6;
-int inRB2 = D5;
-int inLB1 = D7;
-int inLB2 = D8;
+int inRF1 = 13;
+int inRF2 = 12;
+
+int inRB2 = 14;
+int inLF1 = 27;
+
+int inLF2 = 25;
+int inRB1 = 26;
+
+int inLB1 = 32;
+int inLB2 = 33;
 
 //Functions for wheels to not moving
 void leftFrontStp(){
@@ -74,28 +77,6 @@ void rightBackBd(){
 }
 
 //THIS WILL BE THE ACTUAL FUNCTION THAT WE CAN USE
-
-void moveFdSlow(){
-  analogWrite(inLF1, 600);
-  analogWrite(inLF2, 0);
-  analogWrite(inRF1, 600);
-  analogWrite(inRF2, 0);
-  analogWrite(inLB1, 600);
-  analogWrite(inLB2, 0);
-  analogWrite(inRB1, 600);
-  analogWrite(inRB2, 0);
-}
-
-void moveBdSlow(){
-  analogWrite(inLF1, 0);
-  analogWrite(inLF2, 600);
-  analogWrite(inRF1, 0);
-  analogWrite(inRF2, 600);
-  analogWrite(inLB1, 0);
-  analogWrite(inLB2, 600);
-  analogWrite(inRB1, 0);
-  analogWrite(inRB2, 600);
-}
 
 void allStop(){
   digitalWrite(inLF1, LOW);
@@ -180,7 +161,7 @@ void diagonalDownRight(){
 }
 
 void setup(){
-   pinMode(inLF1, OUTPUT);
+  pinMode(inLF1, OUTPUT);
   pinMode(inLF2, OUTPUT);
   pinMode(inRF1, OUTPUT);
   pinMode(inRF2, OUTPUT);
