@@ -102,7 +102,7 @@ while True:
 # 7 "downright", 8 "upleft", "clockwise", "anticlockwise"]
 #                 
     #just close to the edge
-    if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 18:      
+    if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 12:      
             
         if arena_angle < 45 or arena_angle > 315:
             print("right edge %s", movement[2])
