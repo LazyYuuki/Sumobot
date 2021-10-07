@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 import time, json, serial
 import numpy as np
 
-ser=serial.Serial('/dev/ttyACM1',115200)
+ser=serial.Serial('/dev/ttyACM0',115200)
 mqtt_username = "sumobot"
 mqtt_password = "sumobot"
 robot_topic = "raspberry/bot"

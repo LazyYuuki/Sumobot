@@ -8,7 +8,7 @@ import numpy as np
 mqtt_username = "sumobot"
 mqtt_password = "sumobot"
 
-movement = ["stop", "left", "right", "forward", "backward", "downleft", "upright", "upleft", "downright", "clockwise", "anticlockwise"]
+movement = ["stop", "left", "right", "forward", "backward", "downright", "upleft", "upright", "downleft", "clockwise", "anticlockwise"]
 
 client = mqtt.Client()
 client.username_pw_set(mqtt_username, mqtt_password)

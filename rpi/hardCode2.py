@@ -5,7 +5,7 @@ import time, json, serial
 import numpy as np
 import random
 
-ser=serial.Serial('/dev/ttyACM1',115200)
+ser=serial.Serial('/dev/ttyACM0',115200)
 mqtt_username = "sumobot"
 mqtt_password = "sumobot"
 robot_topic = "raspberry/bot"
@@ -98,7 +98,7 @@ while True:
         
 #                 
     #just close to the edge
-    if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 23:
+    if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 18:
         # robot in first and fourth quadrants edges
         if 135 < arena_angle < 225:
             move_publish(1)       
@@ -130,6 +130,7 @@ while True:
             move_publish(0)
     
     else:
-         move_publish(random.randint(0,7,8))
+         move_publish(random.randint(0,8))
+         time.sleep(1)
 
 
