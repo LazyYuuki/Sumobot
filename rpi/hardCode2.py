@@ -142,7 +142,7 @@ while True:
         time.sleep(0.1)
     
     else:
-         move_publish(random.randint(0,8))
+         move_publish(random.randint(1,8))
          time.sleep(0.1)
 
 
