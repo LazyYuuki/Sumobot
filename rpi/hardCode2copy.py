@@ -16,7 +16,9 @@ client.username_pw_set(mqtt_username, mqtt_password)
 def on_connect(client, userdata, flags, rc):
     print("Connected")
     
-movement = ["do nothing", "right", "left", "up", "down", "diagonalDownLeft", "diagonalUpRight", "diagonalUpLeft", "diagonalDownRight", "turnClockwise", "turnAntiClockwise"]
+movement = ["stop", "left", "right", "forward", 
+	"backward", "upright", "downleft", 
+"downright", "upleft", "clockwise", "anticlockwise"]
 imu_angle = 0
 def on_message(client, userdata, message):
     global imu_angle

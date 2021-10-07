@@ -16,7 +16,9 @@ client.username_pw_set(mqtt_username, mqtt_password)
 def on_connect(client, userdata, flags, rc):
     print("Connected")
     
-movement = ["do nothing", "right", "left", "up", "down", "diagonalDownLeft", "diagonalUpRight", "diagonalUpLeft", "diagonalDownRight", "turnClockwise", "turnAntiClockwise"]
+movement = ["stop", "left", "right", "forward", 
+	"backward", "upright", "downleft", 
+"downright", "upleft", "clockwise", "anticlockwise"]
 imu_angle = 0
 def on_message(client, userdata, message):
     global imu_angle
@@ -95,7 +97,9 @@ while True:
     #print(sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)))
     #print(sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) < 40)
     #print(sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)))
-        
+#     movement = [0 "stop", 1 "left", 2 "right", 3 "forward", 
+# 	4 "backward", 5 "upright", 6 "downleft", 
+# 7 "downright", 8 "upleft", "clockwise", "anticlockwise"]
 #                 
     #just close to the edge
     if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 18:      
@@ -110,7 +114,7 @@ while True:
             
         #robot at the bottom of the arena
         elif (225 < arena_angle < 315):
-            print("bottom edge %s", movement[3])
+            print("top edge %s", movement[3])
             move_publish(3)
             
         # robot at the top of the arena
@@ -120,19 +124,19 @@ while True:
             
         elif (135 < arena_angle < 180):
             print("top right %s", movement[5])
-            move_publish(5)
+            move_publish(6)
 
         elif (315 < arena_angle < 360):
             print("bottom left %s", movement[6])
-            move_publish(6)
+            move_publish(5)
             
         elif(180 < arena_angle < 225):
             print("bottom right %s", movement[7])
-            move_publish(7)
+            move_publish(8)
             
         elif(0 < arena_angle < 45):
             print("top left %s", movement[8])
-            move_publish(8)
+            move_publish(7)
         else:
             move_publish(0)
     
