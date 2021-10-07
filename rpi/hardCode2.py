@@ -139,9 +139,10 @@ while True:
             move_publish(7)
         else:
             move_publish(0)
+        time.sleep(0.1)
     
     else:
          move_publish(random.randint(0,8))
-         time.sleep(1)
+         time.sleep(0.1)
 
 
