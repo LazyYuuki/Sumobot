@@ -88,7 +88,7 @@ while True:
     # calculate the angle and arena_angle
     angle = 0
     arena_angle = 0
-    print(decode_list)
+    # print(decode_list)
     angle = calculate_angle(decode_list[0], decode_list[1], decode_list[2], decode_list[3])
     arena_angle = calculate_arena_angle(decode_list[0], decode_list[1])
 #     print(angle, arena_angle)
@@ -98,46 +98,6 @@ while True:
         
 #                 
     #just close to the edge
-    if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 18:      
-            
-        if arena_angle < 45 or arena_angle > 315:
-            print("right edge %s", movement[2])
-            move_publish(2)
-        
-        elif 135 < arena_angle < 225:
-            print("left edge %s", movement[1])
-            move_publish(1) 
-            
-        #robot at the bottom of the arena
-        elif (225 < arena_angle < 315):
-            print("bottom edge %s", movement[3])
-            move_publish(3)
-            
-        # robot at the top of the arena
-        elif (45 < arena_angle < 135):
-            print("top edge %s", movement[4])
-            move_publish(4)
-            
-        elif (135 < arena_angle < 180):
-            print("top right %s", movement[5])
-            move_publish(5)
-
-        elif (315 < arena_angle < 360):
-            print("bottom left %s", movement[6])
-            move_publish(6)
-            
-        elif(180 < arena_angle < 225):
-            print("bottom right %s", movement[7])
-            move_publish(7)
-            
-        elif(0 < arena_angle < 45):
-            print("top left %s", movement[8])
-            move_publish(8)
-        else:
-            move_publish(0)
-    
-    else:
-         move_publish(random.randint(0,8))
-         time.sleep(1)
+    print(arena_angle)
 
 
