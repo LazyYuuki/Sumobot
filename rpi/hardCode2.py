@@ -105,11 +105,11 @@ while True:
     if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 12:      
             
         if arena_angle < 45 or arena_angle > 315:
-            print("right edge %s", movement[2])
+            print("left edge %s", movement[2])
             move_publish(2)
         
         elif 135 < arena_angle < 225:
-            print("left edge %s", movement[1])
+            print("right edge %s", movement[1])
             move_publish(1) 
             
         #robot at the bottom of the arena
