@@ -17,7 +17,7 @@ clock = time.clock()
 uart = UART(3, 115200, timeout_char=1000)                         # init with given baudrate
 uart.init(115200, bits=8, parity=None, stop=1, timeout_char=1000) # init with given parameters
 
-threshold_index = 5 # 0 for red, 1 for green, 2 for blue, 3 for 3d printed, 4 for cytron box
+threshold_index = 6 # 0 for red, 1 for green, 2 for blue, 3 for 3d printed, 4 for cytron box
 # Color Tracking Thresholds (L Min, L Max, A Min, A Max, B Min, B Max)
 # The below thresholds track in general red/green/blue things. You may wish to tune them...
 thresholds = [(30, 100, 15, 127, 15, 127), # generic_red_thresholds
@@ -25,7 +25,8 @@ thresholds = [(30, 100, 15, 127, 15, 127), # generic_red_thresholds
               (0, 30, 0, 64, -128, 0),
               (31, 53, -128, 37, -128, -35), # generic_blue_thresholds
               (30, 60, -34, 12, -38, -13), # cytron
-              (0, 43, 14, 127, -128, 127)] # acrylic blue
+              (0, 43, 14, 127, -128, 127), # acrylic blue
+              (0, 70, -17, 127, -128, -8)] # latest
 
 def find_color_blob():
     ours_x, ours_y, width, height = 0,0,0,0
@@ -81,6 +82,7 @@ while(True):
                 edge_y1 += y1
                 num_of_seg += 2
                 img.draw_line(l.line(), color = (255, 0, 0))
+
     if (edge_x1 != 0):
         edge_x1 = edge_x1/num_of_seg
         edge_y1 = edge_y1/num_of_seg
