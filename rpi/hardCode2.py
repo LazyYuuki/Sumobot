@@ -114,35 +114,33 @@ while True:
             
         #robot at the bottom of the arena
         elif (225 < arena_angle < 315):
-            print("bottom edge %s", movement[3])
+            print("bottom edge %s", movement[4])
             move_publish(4)
             
         # robot at the top of the arena
         elif (45 < arena_angle < 135):
-            print("top edge %s", movement[4])
+            print("top edge %s", movement[3])
             move_publish(3)
             
         elif (135 < arena_angle < 180):
-            print("top right %s", movement[5])
+            print("top right %s", movement[6])
             move_publish(6)
 
         elif (315 < arena_angle < 360):
-            print("bottom left %s", movement[6])
+            print("bottom left %s", movement[5])
             move_publish(5)
             
         elif(180 < arena_angle < 225):
-            print("bottom right %s", movement[7])
+            print("bottom right %s", movement[8])
             move_publish(8)
             
         elif(0 < arena_angle < 45):
-            print("top left %s", movement[8])
+            print("top left %s", movement[7])
             move_publish(7)
         else:
             move_publish(0)
-        time.sleep(0.1)
     
     else:
          move_publish(random.randint(1,8))
-         time.sleep(0.1)
 
 
