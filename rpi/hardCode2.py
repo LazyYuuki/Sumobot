@@ -98,33 +98,41 @@ while True:
         
 #                 
     #just close to the edge
-    if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 18:
-        # robot in first and fourth quadrants edges
-        if 135 < arena_angle < 225:
-            move_publish(1)       
+    if sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)) > 18:      
             
         # robot in left side edges
-        elif arena_angle < 45 or arena_angle > 315:
+        if arena_angle < 45 or arena_angle > 315:
+            print("left edge")
             move_publish(2)
+        
+        elif 135 < arena_angle < 225:
+            print("right edge")
+            move_publish(1) 
             
         #robot at the bottom of the arena
         elif (225 < arena_angle < 315):
+            print("bottom edge")
             move_publish(3)
             
         # robot at the top of the arena
         elif (45 < arena_angle < 135):
+            print("top edge")
             move_publish(4)
             
         elif (135 < arena_angle < 180):
+            print("top right")
             move_publish(5)
-            
+
         elif (315 < arena_angle < 360):
+            print("bottom left")
             move_publish(6)
             
         elif(180 < arena_angle < 225):
+            print("bottom right")
             move_publish(7)
             
         elif(0 < arena_angle < 45):
+            print("top left")
             move_publish(8)
         else:
             move_publish(0)
