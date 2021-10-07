@@ -16,8 +16,8 @@ client.username_pw_set(mqtt_username, mqtt_password)
 def on_connect(client, userdata, flags, rc):
     print("Connected")
     
-movement = ["stop", "left", "right", "forward", 
-	"backward", "upright", "downleft", 
+movement = ["stop", "left", "right", "backward", 
+	"forward", "upright", "downleft", 
 "downright", "upleft", "clockwise", "anticlockwise"]
 imu_angle = 0
 def on_message(client, userdata, message):
@@ -97,8 +97,8 @@ while True:
     #print(sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)))
     #print(sqrt(pow((decode_list[2]-decode_list[0]), 2) + pow((decode_list[3]-decode_list[1]), 2)) < 40)
     #print(sqrt(pow(decode_list[0], 2) + pow(decode_list[1], 2)))
-#     movement = [0 "stop", 1 "left", 2 "right", 3 "forward", 
-# 	4 "backward", 5 "upright", 6 "downleft", 
+#     movement = [0 "stop", 1 "left", 2 "right", 3 "backward", 
+# 	4 "forward", 5 "upright", 6 "downleft", 
 # 7 "downright", 8 "upleft", "clockwise", "anticlockwise"]
 #                 
     #just close to the edge
@@ -114,13 +114,13 @@ while True:
             
         #robot at the bottom of the arena
         elif (225 < arena_angle < 315):
-            print("top edge %s", movement[3])
-            move_publish(3)
+            print("bottom edge %s", movement[3])
+            move_publish(4)
             
         # robot at the top of the arena
         elif (45 < arena_angle < 135):
             print("top edge %s", movement[4])
-            move_publish(4)
+            move_publish(3)
             
         elif (135 < arena_angle < 180):
             print("top right %s", movement[5])
