@@ -5,10 +5,10 @@ int inRF1 = D2;
 int inRF2 = D3;
 int inLF1 = D0;
 int inLF2 = D1;
-int inRB1 = D6;
-int inRB2 = D5;
-int inLB1 = D7;
-int inLB2 = D8;
+int inRB1 = D8;
+int inRB2 = D7;
+int inLB1 = D5;
+int inLB2 = D6;
 
 //Functions for wheels to not moving
 void leftFrontStp(){
@@ -35,7 +35,6 @@ void rightBackStp(){
 void leftFrontFd(){
   digitalWrite(inLF1, HIGH);
   digitalWrite(inLF2, LOW);
-
 }
 
 void rightFrontFd(){
@@ -98,14 +97,14 @@ void moveBdSlow(){
 }
 
 void allStop(){
-  digitalWrite(inLF1, LOW);
-  digitalWrite(inLF2, LOW);
-  digitalWrite(inRF1, LOW);
-  digitalWrite(inRF2, LOW);
-  digitalWrite(inLB1, LOW);
-  digitalWrite(inLB2, LOW);
-  digitalWrite(inRB1, LOW);
-  digitalWrite(inRB2, LOW);
+	digitalWrite(inLF1, LOW);
+	digitalWrite(inLF2, LOW);
+	digitalWrite(inRF1, LOW);
+	digitalWrite(inRF2, LOW);
+	digitalWrite(inLB1, LOW);
+	digitalWrite(inLB2, LOW);
+	digitalWrite(inRB1, LOW);
+	digitalWrite(inRB2, LOW);
 }
 
 void moveForwards(){
@@ -123,10 +122,10 @@ void moveBackwards(){
 }
 
 void moveRight(){
-  leftBackFd();
-  leftFrontBd();
   rightFrontFd();
+  leftBackFd();
   rightBackBd();
+  leftFrontBd();
 }
 
 void moveLeft(){
@@ -140,14 +139,14 @@ void turnClockwise(){
   leftFrontFd();
   leftBackFd();
   rightFrontBd();
-  rightBackBd();
+  leftBackBd();
 }
 
 void turnAntiClockwise(){
   leftFrontBd();
   leftBackBd();
   rightFrontFd();
-  rightBackFd();
+  leftBackFd();
 }
 
 
@@ -177,29 +176,4 @@ void diagonalDownRight(){
   leftBackBd();
   rightBackStp();
   leftFrontStp();
-}
-
-void setup(){
-   pinMode(inLF1, OUTPUT);
-  pinMode(inLF2, OUTPUT);
-  pinMode(inRF1, OUTPUT);
-  pinMode(inRF2, OUTPUT);
-  pinMode(inLB1, OUTPUT);
-  pinMode(inLB2, OUTPUT);
-  pinMode(inRB1, OUTPUT);
-  pinMode(inRB2, OUTPUT);
-
-  // Turn off motors - Initial state
-  digitalWrite(inLF1, LOW);
-  digitalWrite(inLF2, LOW);
-  digitalWrite(inRF1, LOW);
-  digitalWrite(inRF2, LOW);
-  digitalWrite(inLB1, LOW);
-  digitalWrite(inLB2, LOW);
-  digitalWrite(inRB1, LOW);
-  digitalWrite(inRB2, LOW);
-}
-
-void loop(){
-  moveForwards();
 }

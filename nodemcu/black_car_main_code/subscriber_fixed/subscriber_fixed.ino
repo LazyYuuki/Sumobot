@@ -1,4 +1,4 @@
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <String.h>
@@ -15,7 +15,7 @@ const char* mqtt_username = "sumobot";
 const char* mqtt_password = "sumobot";
 unsigned long startMillis;  //some global variables available anywhere in the program
 unsigned long currentMillis;
-const unsigned long period = 100;  //the value is a number of milliseconds
+const unsigned long period = 200;  //the value is a number of milliseconds
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -73,15 +73,15 @@ void setup() {
 
 void loop() {
   if (!client.connected()) {
-     client.connect("ESP3", mqtt_username, mqtt_password);
-     Serial.println("Connecting to MQTT client");
-   }
+    client.connect("ESP3", mqtt_username, mqtt_password);
+    Serial.println("Connecting to MQTT client");
+  }
 
   currentMillis = millis();  //get the current "time" (actually the number of milliseconds since the program started)
   if (currentMillis - startMillis >= period)  //test whether the period has elapsed
   {
     allStop();
-    Serial.println("Timeout: Stoppp");
+    //Serial.println("Timeout: Stoppp");
   }
   client.loop();
 }
@@ -115,114 +115,117 @@ void connectMQTT() {
     } else {
       Serial.println("MQTT failed, state");
       // Wait before retrying
-      delay(2500);
+      vTaskDelay(500);
     }
   }
 }
 
 void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
-  startMillis = millis(); 
-  if(strcmp(msgTopic,topic1)==0){
+  startMillis = millis();
+  if (strcmp(msgTopic, topic1) == 0) {
     Serial.println("Topic IMU");
-  // copy payload to a static string
-  static char message[MAX_MSG_LEN + 1];
-  if (msgLength > MAX_MSG_LEN) {
-    msgLength = MAX_MSG_LEN;
-  }
-  strncpy(message, (char *)msgPayload, msgLength);
-  message[msgLength] = '\0';
-  String myString = String(message); 
+    // copy payload to a static string
+    static char message[MAX_MSG_LEN + 1];
+    if (msgLength > MAX_MSG_LEN) {
+      msgLength = MAX_MSG_LEN;
+    }
+    strncpy(message, (char *)msgPayload, msgLength);
+    message[msgLength] = '\0';
+    String myString = String(message);
 
-  if(myString[0] == '1'){
-    Serial.println("Turn anticlockwise");
-    turnAntiClockwise();
-  } else if (myString[0] == '2') {
-    Serial.println("Turn clockwise");
-    turnClockwise();
-  } else {
-    allStop();
-  }
-  }
-
-  else if (strcmp(msgTopic,topic2)==0) {
-    Serial.println("Topic BOT");
-     static char message[MAX_MSG_LEN + 1];
-  if (msgLength > MAX_MSG_LEN) {
-    msgLength = MAX_MSG_LEN;
-  }
-  strncpy(message, (char *)msgPayload, msgLength);
-  message[msgLength] = '\0';
-
-  //  Serial.printf("topic %s, message received: %s\n", msgTopic, message);
-  DeserializationError err = deserializeJson(jsonBuffer, msgPayload);
-  //  JsonObject& root = jsonBuffer.parseObject(msgPayload);
-  if (err) {
-    Serial.print(F("deserializeJson() failed with code "));
-    Serial.println(err.c_str());
-  }
-  int action = jsonBuffer["move"];
-  Serial.println(action);
-  switch (action) {
-    case 0:
-      allStop();
-      Serial.println("Receive: Stoppp");
-      break;
-    case 1:
-      // turn left
-      moveLeft();
-      Serial.println("Receive: left");
-      break;
-    case 2:
-      // turn right
-      moveRight();
-      Serial.println("Receive: right");
-      break;
-    case 3:
-      // forward
-      Serial.println("Receive: 4wards");
-      moveForwards();
-      break;
-    case 4:
-      // backward
-      Serial.println("Receive: backwards");
-      moveBackwards();
-      break;
-    case 5:
-      // diagonalDownLeft
-      Serial.println("Receive: downleft");
-      diagonalDownLeft();
-      break;
-    case 6:
-      // diagonalUpRight
-      Serial.println("Receive: upright");
-      diagonalUpRight();
-      break;
-    case 7:
-      // diagonalUpLeft
-      Serial.println("Receive: upleft");
-      diagonalUpLeft();
-      break;
-    case 8:
-      // diagonalDownRight
-      Serial.println("Receive: downright");
-      diagonalDownRight();
-      break;
-    case 9:
-      // turnClockwise
-      Serial.println("Receive: clockwise");
-      turnClockwise();
-      break;
-    case 10:
-      // turnAntiClockwise
-      Serial.println("Receive: anticlockwise");
+    if (myString[0] == '1') {
+      Serial.println("Turn anticlockwise");
       turnAntiClockwise();
-      break;
-    default:
+    } else if (myString[0] == '2') {
+      Serial.println("Turn clockwise");
+      turnClockwise();
+    } else {
       allStop();
-      break;
+    }
   }
 
+  else if (strcmp(msgTopic, topic2) == 0) {
+    Serial.println("Topic BOT");
+    static char message[MAX_MSG_LEN + 1];
+    if (msgLength > MAX_MSG_LEN) {
+      msgLength = MAX_MSG_LEN;
+    }
+    strncpy(message, (char *)msgPayload, msgLength);
+    message[msgLength] = '\0';
+
+    //  Serial.printf("topic %s, message received: %s\n", msgTopic, message);
+    DeserializationError err = deserializeJson(jsonBuffer, msgPayload);
+    //  JsonObject& root = jsonBuffer.parseObject(msgPayload);
+    if (err) {
+      Serial.print(F("deserializeJson() failed with code "));
+      Serial.println(err.c_str());
+    }
+    int action = jsonBuffer["move"];
+    Serial.println(action);
+    switch (action) {
+      case 0:
+        allStop();
+        Serial.println("Receive: Stoppp");
+        break;
+      case 1:
+        // turn left
+        moveLeft();
+        Serial.println("Receive: left");
+        break;
+      case 2:
+        // turn right
+        moveRight();
+        Serial.println("Receive: right");
+        break;
+      case 3:
+        // forward
+        Serial.println("Receive: 4wards");
+        moveForwards();
+        break;
+      case 4:
+        // backward
+        Serial.println("Receive: backwards");
+        moveBackwards();
+        break;
+      case 5:
+        // diagonalDownLeft
+        Serial.println("Receive: downleft");
+        diagonalDownLeft();
+        break;
+      case 6:
+        // diagonalUpRight
+        Serial.println("Receive: upright");
+        diagonalUpRight();
+        break;
+      case 7:
+        // diagonalUpLeft
+        Serial.println("Receive: upleft");
+        diagonalUpLeft();
+        break;
+      case 8:
+        // diagonalDownRight
+        Serial.println("Receive: downright");
+        diagonalDownRight();
+        break;
+      case 9:
+        // turnClockwise
+        Serial.println("Receive: clockwise");
+        turnClockwise();
+        break;
+      case 10:
+        // turnAntiClockwise
+        Serial.println("Receive: anticlockwise");
+        turnAntiClockwise();
+        break;
+      default:
+        allStop();
+        break;
+    }
+
+
   }
+
+
 
 
 }
