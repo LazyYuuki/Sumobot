@@ -2,6 +2,8 @@
 ## Welcome to NUS Sumobot Repository!
 ## 1. Introduction
 
+Additional Google Doc Documentation https://docs.google.com/document/d/1GuzY8P-FfNIKnv2RRr8Z_rRWyYxQeD7UvBhbVNG4xBk/edit?usp=sharing
+
 This is a repository for the development of the Sumo Robot by NUS Robomaster DarkNUS team (Winter 2020). In here, you will find the code for Computer Vision, Microcontroller (eg. Arduino, Rasberrypi, ...) and all the design and iteration of the Sumo Robot.
 
 We will also use this repo to track our general development progress by indicating the completion status of each team and aspects which the team are working on in this repository.
