@@ -1,14 +1,14 @@
 // Motor A connections
 //1,2 is for left front, 3,4 is for right front
 //7,8 is for left back, 5,6 is for right back
-int inRF1 = D2;
-int inRF2 = D3;
-int inLF1 = D0;
-int inLF2 = D1;
-int inRB1 = D6;
-int inRB2 = D5;
-int inLB1 = D7;
-int inLB2 = D8;
+int inRF1 = 25; // D2
+int inRF2 = 26; // D3
+int inLF1 = 32; // D0
+int inLF2 = 33; // D1
+int inRB1 = 14; // D6
+int inRB2 = 27; // D5
+int inLB1 = 12; // D7
+int inLB2 = 13; // D8
 
 //Functions for wheels to not moving
 void leftFrontStp(){
