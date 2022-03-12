@@ -10,7 +10,7 @@
 
 const char* ssid     = "renxiang";
 const char* password = "12345678";
-const char *serverHostname = "192.168.137.152";
+const char *serverHostname = "192.168.137.250";
 const char *topic1 = "raspberry/imu";
 const char *topic2 = "raspberry/bot";
 const char* mqtt_username = "sumobot";
@@ -80,12 +80,12 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
 
   if(myString[0] == '1'){
     Serial.println("Turn anticlockwise");
-    turnAntiClockwise();
+    // turnAntiClockwise();
   } else if (myString[0] == '2') {
     Serial.println("Turn clockwise");
-    turnClockwise();
+    // turnClockwise();
   } else {
-    allStop();
+    // allStop();
   }
   }
 
@@ -162,6 +162,9 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
       Serial.println("Receive: anticlockwise");
       turnAntiClockwise();
       break;
+    case 11:
+      roundArena();
+      break;
     default:
       allStop();
       break;
@@ -204,7 +207,7 @@ void setup()
 
   while (!client.connected()) {
     Serial.println("Connecting to MQTT Broker!");
-    if (client.connect("ESP3", mqtt_username, mqtt_password)) {
+    if (client.connect("ESP4", mqtt_username, mqtt_password)) {
       Serial.println("Connected");
     }
 

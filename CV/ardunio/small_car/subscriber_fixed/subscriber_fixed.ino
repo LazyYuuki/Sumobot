@@ -10,12 +10,12 @@
 
 const char* ssid     = "renxiang";
 const char* password = "12345678";
-const char *serverHostname = "192.168.137.152";
+const char *serverHostname = "192.168.137.153";
 const char *topic1 = "raspberry/imu";
 const char *topic2 = "raspberry/bot";
 const char* mqtt_username = "sumobot";
 const char* mqtt_password = "sumobot";
-unsigned long startMillis;  //some global variables available anywhere in the program
+unsigned long startMillis;  //some global variabcles available anywhere in the program
 unsigned long currentMillis;
 const unsigned long period = 1000;  //the value is a number of milliseconds
 WiFiClient espClient;
@@ -80,12 +80,12 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
 
   if(myString[0] == '1'){
     Serial.println("Turn anticlockwise");
-    turnAntiClockwise();
+    // turnAntiClockwise();
   } else if (myString[0] == '2') {
     Serial.println("Turn clockwise");
-    turnClockwise();
+    // turnClockwise();
   } else {
-    allStop();
+    // allStop();
   }
   }
 
@@ -161,6 +161,9 @@ void callback(char *msgTopic, byte *msgPayload, unsigned int msgLength) {
       // turnAntiClockwise
       Serial.println("Receive: anticlockwise");
       turnAntiClockwise();
+      break;
+    case 11:
+      roundArena();
       break;
     default:
       allStop();
@@ -249,14 +252,14 @@ void loop()
     // Serial.println("will publish");
     if(angle > 20){
       //1 for cw, 2 for anticw
-      client.publish("raspberry/imu", "1"); 
+      //client.publish("raspberry/imu", "1"); 
     } else {
-      client.publish("raspberry/imu", "2"); 
+      //client.publish("raspberry/imu", "2"); 
     }
     timer2 = millis();
     }
    else {
-    client.publish("raspberry/imu", "0"); 
+    //client.publish("raspberry/imu", "0"); 
    }
    timer = millis(); 
   }
